@@ -1,8 +1,8 @@
 {
-    "name": "drm-accordion",
+    "name": "drm-utility-lib",
     "version": "0.0.3",
-    "description": "accordion content",
-    "main": "dist/drm-accordion.js",
+    "description": "utility-lib content",
+    "main": "dist/drm-utility-lib.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -10,9 +10,9 @@
         "jquery",
         "javascript",
         "ux",
-        "accordion"
+        "utility-lib"
     ],
-    "homepage": "http://dynamicresponsewebsites.net/drm-utilities/drm-accordion.html",
+    "homepage": "http://elizabeth-rogers.com/drm-utilities/drm-utility-lib.html",
     "license": "MIT",
     "author": {
         "name": "Elizabeth Rogers",
@@ -21,7 +21,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/dynamicresponsemedia/drm-accordion.git"
+        "url": "https://github.com/drm-utilities/drm-utility-lib.git"
     },
     "devDependencies": {
         "coffee-script": "1.7.1",

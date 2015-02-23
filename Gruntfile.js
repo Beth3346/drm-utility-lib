@@ -38,27 +38,36 @@ module.exports = function(grunt) {
                 flatten: true,
                 cwd: '<%= appFolder %>',
                 src: ['**/*.coffee'],
-                dest: '<%= distFolder %>',
+                dest: '<%= distFolder %>/coffee-compiled',
                 ext: '.js'
             }  
         },
 
-        // concat: {
-        //     options: {
-        //             // define a string to put between each file in the concatenated output
-        //         separator: ';'
-        //     },
+        concat: {
+            options: {
+                    // define a string to put between each file in the concatenated output
+                separator: ';'
+            },
 
-        //     dist: {
-        //         // the files to concatenate
-        //         src: ['<%= distFolder %>assets/*.js','<%= distFolder %>coffee-compiled/*.js'],
-        //         // the location of the resulting JS file
-        //         dest: '<%= distFolder %><%= pkg.name %>.js'
-        //     }
-        // },
+            dist: {
+                // the files to concatenate
+                src: [
+                    '<%= distFolder %>coffee-compiled/drm-utility-lib.js',
+                    '<%= distFolder %>coffee-compiled/array-utilities.js',
+                    '<%= distFolder %>coffee-compiled/date-utilities.js',
+                    '<%= distFolder %>coffee-compiled/page-element-utilities.js',
+                    '<%= distFolder %>coffee-compiled/pattern-utilities.js',
+                    '<%= distFolder %>coffee-compiled/sort-utilities.js',
+                    '<%= distFolder %>coffee-compiled/string-utilities.js',
+                    '<%= distFolder %>coffee-compiled/table-sort-utilities.js'
+                ],
+                // the location of the resulting JS file
+                dest: '<%= distFolder %><%= pkg.name %>.<%= pkg.version %>.js'
+            }
+        },
 
         jshint: {
-            files: ['<%= distFolder %>*.js'],
+            files: ['<%= distFolder %>/coffee-compiled/**/*.js'],
             options: {
                 maxerr: 10,
                 // unused: true,
@@ -75,7 +84,7 @@ module.exports = function(grunt) {
                 },
 
                 files: {
-                    '<%= distFolder %><%= pkg.name %>.js': ['<%= distFolder %><%= pkg.name %>.js']
+                    '<%= distFolder %><%= pkg.name %>.<%= pkg.version %>.min.js': ['<%= distFolder %><%= pkg.name %>.<%= pkg.version %>.js']
                 }
             }
         },
@@ -117,7 +126,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     // Default task(s).
-    grunt.registerTask('default', ['clean:build', 'copy', 'coffee', 'jshint', 'clean:postbuild', 'watch']);
-    grunt.registerTask('build', ['clean:build', 'copy', 'coffee', 'jshint', 'uglify', 'clean:postbuild'])
+    grunt.registerTask('default', ['clean:build', 'coffee', 'jshint', 'concat', 'clean:postbuild', 'watch']);
+    grunt.registerTask('build', ['clean:build', 'coffee', 'jshint', 'concat', 'uglify', 'clean:postbuild'])
 
 };
