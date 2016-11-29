@@ -1,6 +1,6 @@
 {
   "name": "elr-utility-lib",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "JavaScript Utility Library",
   "main": "dist/elr-utilities.js",
   "repository": {
