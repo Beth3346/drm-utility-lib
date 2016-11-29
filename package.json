@@ -2,7 +2,7 @@
   "name": "elr-utility-lib",
   "version": "1.0.2",
   "description": "JavaScript Utility Library",
-  "main": "dist/elr-utility-lib.js",
+  "main": "dist/elr-utilities.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/elr-utilities/elr-utility-lib.git"
