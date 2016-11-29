@@ -11,13 +11,13 @@ gulp.task('clean:scripts', function() {
 });
 
 gulp.task('jshint', function() {
-    return gulp.src(['src/elr-accordion.js'])
+    return gulp.src(['src/elr-utilities.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
 gulp.task('babel', ['jshint'], function() {
-    return gulp.src(['src/elr-accordion.js', 'elr-accordion.js'])
+    return gulp.src(['src/elr-utilities.js', 'elr-utilities.js'])
         .pipe(babel({
             presets: ['es2015']
         }))
@@ -25,7 +25,7 @@ gulp.task('babel', ['jshint'], function() {
 });
 
 gulp.task('scripts', ['babel'], function() {
-    return gulp.src(['dist/elr-accordion.js'])
+    return gulp.src(['dist/elr-utilities.js'])
         .pipe(gulp.dest(`dist`));
 });
 
