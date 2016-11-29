@@ -11,13 +11,13 @@ gulp.task('clean:scripts', function() {
 });
 
 gulp.task('jshint', function() {
-    return gulp.src(['src/elr-utilities.js'])
+    return gulp.src(['src/elr-utility-lib.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
 gulp.task('babel', ['jshint'], function() {
-    return gulp.src(['src/elr-utilities.js', 'elr-utilities.js'])
+    return gulp.src(['src/elr-utility-lib.js', 'elr-utility-lib.js'])
         .pipe(babel({
             presets: ['es2015']
         }))
@@ -25,7 +25,7 @@ gulp.task('babel', ['jshint'], function() {
 });
 
 gulp.task('scripts', ['babel'], function() {
-    return gulp.src(['dist/elr-utilities.js'])
+    return gulp.src(['dist/elr-utility-lib.js'])
         .pipe(gulp.dest(`dist`));
 });
 
