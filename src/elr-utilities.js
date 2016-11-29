@@ -1,17 +1,15 @@
-(function($) {
-    // adds case insensitive contains to jQuery
+const $ = require('jquery');
 
-    $.extend($.expr[":"], {
-        "containsNC": function(elem, i, match) {
-            return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-        }
-    });
+if (!Number.isNan) {
+    Number.isNan = function(num) {
+        return num !== num;
+    };
+}
 
-    var elrUtilities = function() {
-        var self = {};
-
+const elrUtilities = function() {
+    const self = {
         // TODO: add support for sorting datetime values
-        self.patterns = {
+        patterns: {
             numeral: new RegExp('[0-9]+'),
             alphaLower: new RegExp('[a-z]+'),
             alphaUpper: new RegExp('[A-Z]+'),
@@ -24,12 +22,12 @@
             minute: new RegExp(':(\\d+)'),
             ampm: new RegExp('(am|pm|AM|PM)$'),
             // an integer can be negative or positive and can include one comma separator followed by exactly 3 numbers
-            integer: new RegExp("(^\\-?\\d*$)|(^\\-?\\d*(,\\d{3})*$)"),
-            number: new RegExp("^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)$"),
+            integer: new RegExp('(^\\-?\\d*$)|(^\\-?\\d*(,\\d{3})*$)'),
+            number: new RegExp('^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)$'),
             url: new RegExp('^https?:\\/\\/[\\da-z\\.\\-]+[\\.a-z]{2,6}[\\/\\w/.\\-]*\\/?$','i'),
             email: new RegExp('^[a-z][a-z\\-\\_\\.\\d]*@[a-z\\-\\_\\.\\d]*\\.[a-z]{2,6}$','i'),
             // validates 77494 and 77494-3232
-            zip: new RegExp('^[0-9]{5}-[0-9]{4}$|^[0-9]{5}$'),
+            postalCode: new RegExp('^[0-9]{5}-[0-9]{4}$|^[0-9]{5}$'),
             // validates United States phone number patterns
             phone: new RegExp('^\\(?\\d{3}[\\)\\-\\.]?[\\s]?\\d{3}[\\-\\.]?\\d{4}(?:[xX]\\d+)?$','i'),
             // allows alpha . - and ensures that the user enters both a first and last name
@@ -37,11 +35,11 @@
             alpha: new RegExp('[a-z]*','i'),
             allAlpha: new RegExp('^[a-z\\-\\s]*$','i'),
             alphaNum: new RegExp('^[a-z\\d ]*$','i'),
-            noSpaces: new RegExp('^[\\S]*$','i'),
+            spaces: new RegExp('^[\\S]*$','i'),
             alphaNumDash: new RegExp('^[a-z\\d- ]*$','i'),
             // allows alphanumeric characters and underscores; no spaces; recommended for usernames
             alphaNumUnderscore: new RegExp('^[a-z\\d_]*$','i'),
-            noTags: new RegExp('<[a-z]+.*>.*<\/[a-z]+>','i'),
+            tags: new RegExp('<[a-z]+.*>.*<\/[a-z]+>','i'),
             // mm/dd/yyyy
             monthDayYear: new RegExp('^(?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4}$'),
             // 00:00pm
@@ -60,148 +58,205 @@
             singleSpace: new RegExp('\\s'),
 
             // sort patterns
-            sortNumber: new RegExp("^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)"),
+            sortNumber: new RegExp('^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)'),
             sortMonthDayYear: new RegExp('^(?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4}'),
             sortTime: new RegExp('^(?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\/:[012345][0-9])?(?:am|pm|AM|PM)', 'i')
-        };
+        },
+        each(collection, callback) {
+            let i = 0;
+            let length = collection.length;
+            let isArray = self.isArrayLike(collection);
 
-        self.dataTypeChecks = {
-            isDate: function(value) {
-                return ( self.patterns.sortMonthDayYear.test(value) ) ? true : false;
-            },
-            isNumber: function(value) {
-                return ( self.patterns.sortNumber.test(value) ) ? true : false;
-            },
-            isAlpha: function(value) {
-                return ( self.patterns.alpha.test(value) ) ? true : false;
-            },
-            isTime: function(value) {
-                return ( self.patterns.sortTime.test(value) ) ? true : false;
+            if (isArray) {
+                for (; i < length; i++) {
+                    if (callback.call(collection[ i ], i, collection[ i ]) === false) {
+                        break;
+                    }
+                }
+            } else {
+                for (i in collection) {
+                    if (callback.call(collection[ i ], i, collection[ i ]) === false) {
+                        break;
+                    }
+                }
             }
-        };
 
-        self.getDataTypes = function(values, type) {
-            var that = this;
-            var types = [];
+            return collection;
+        },
+        trim(str) {
+            if (str) {
+                return (str === null) ? '' : str.replace(/^\s+|\s+$/g,'');
+            }
+
+            return false;
+        },
+        isOdd(val) {
+            return val % 2 === 1;
+        },
+        isEven(val) {
+            return val % 2 === 0;
+        },
+        // filters an array using a callback function
+        // exclude(arr, fn) {
+        //     let list = [];
+        //     for (let i = 0; i < arr.length; i++) {
+        //         if (fn(arr[i])) {
+        //             list.push(arr[i]);
+        //         }
+        //     }
+
+        //     return list;
+        // };
+        isDate(val) {
+            return (this.patterns.sortMonthDayYear.test(val)) ? true : false;
+        },
+        isNumber(val) {
+            return (this.patterns.sortNumber.test(val)) ? true : false;
+        },
+        isAlpha(val) {
+            return (this.patterns.alpha.test(val)) ? true : false;
+        },
+        isTime(val) {
+            return (this.patterns.sortTime.test(val)) ? true : false;
+        },
+        getDataTypes(values, type = null) {
+            let types = [];
             type = type || null;
 
-            if ( type ) {
+            if (type) {
                 types.push(type);
             } else {
-                $.each(values, function(k,v) {
-                    if ( v === '' ) {
+                this.each(values, (k, v) => {
+                    if (v === '') {
                         return;
                     }
 
-                    if ( self.dataTypeChecks.isDate.call(that, v) ) {
+                    if (this.isDate(v)) {
                         return types.push('date');
-                    } else if ( self.dataTypeChecks.isTime.call(that, v) ) {
+                    } else if (this.isTime(v)) {
                         return types.push('time');
-                    } else if ( self.dataTypeChecks.isNumber.call(that, v) ) {
+                    } else if (this.isNumber(v)) {
                         return types.push('number');
-                    } else if ( self.dataTypeChecks.isAlpha.call(that, v) ) {
+                    } else if (this.isAlpha(v)) {
                         return types.push('alpha');
                     } else {
                         return;
                     }
                 });
             }
-            return $.unique(types);
-        };
 
-        self.generateRandomString = function(length, charset) {
-            var str = '';
+            return this.unique(types);
+        },
+        generateRandomString(length, charset) {
+            let str = '';
             length = length || 10;
             charset = charset || 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-            for (var i = 0, n = charset.length; i < length; i++) {
+            for (let i = 0, n = charset.length; i < length; i++) {
                 str += charset.charAt(Math.floor(Math.random() * n));
             }
 
             return str;
-        };
+        },
+        checkBlacklist(str, blacklist) {
+            if (str) {
+                return self.inArray(blacklist, str.toLowerCase());
+            }
 
-        self.checkBlacklist = function(password, blacklist) {
-            return $.inArray(password.toLowerCase(), blacklist);
-        };
+            return;
+        },
+        checkLength(str, reqLength) {
+            if (str) {
+                return (str.length < reqLength) ? true : false;
+            }
 
-        self.checkLength = function(str, reqLength) {
-            return (str.length < reqLength) ? true : false;
-        };
+            return;
+        },
+        getText(elems, separator = ' ') {
+            let text = [];
 
-        self.getText = function($elems) {
-            var text = [];
-
-            $.each($elems, function() {
-                text.push($(this).text());
+            self.each(elems, function() {
+                let val = this.innerText || this.textContent;
+                text.push(self.trim(val));
             });
 
-            return text;
-        };
+            return text.join(separator);
+        },
+        getTextArray(elems) {
+            let arr = [];
 
-        self.getValue = function($field) {
-            return $.trim($field.val());
-        };
+            self.each(elems, function() {
+                let val = this.innerText || this.textContent;
+                arr.push(val);
+            });
 
-        self.getColumnList = function(columnNum, $listItems) {
-            var $list = [];
+            return arr;
+        },
+        getValue(field) {
+            let value = self.trim(field.value);
 
-            $.each($listItems, function(k,v) {
+            if (value.length > 0) {
+                return value;
+            } else {
+                return null;
+            }
+        },
+        getColumnList(columnNum, $listItems) {
+            let $list = [];
+
+            self.each($listItems, function(k, v) {
                 $list.push($(v).find('td').eq(columnNum));
 
                 return $list;
             });
 
             return $list;
-        };
+        },
+        getListValues($list) {
+            let values = [];
 
-        self.getListValues = function($list) {
-            var values = [];
-
-            $.each($list, function(k,v) {
-                values.push($.trim($(v).text()).toLowerCase());
+            self.each($list, function(k,v) {
+                values.push(self.trim($(v).text()).toLowerCase());
 
                 return values;
             });
 
             return values;
-        };
-
+        },
         // removes leading 'the' or 'a' from a string
-        self.cleanAlpha = function(str, ignoreWords) {
+        cleanAlpha(str, ignoreWords) {
             ignoreWords = ignoreWords || ['the', 'a'];
 
-            $.each(ignoreWords, function() {
-                var re = new RegExp("^" + this + "\\s", 'i');
+            self.each(ignoreWords, function() {
+                let re = new RegExp('^' + this + '\\s', 'i');
                 str = str.replace(re, '');
 
                 return str;
             });
 
             return str;
-        };
-
-        self.capitalize = function(str) {
+        },
+        capitalize(str) {
             return str.toLowerCase().replace(/^.|\s\S/g, function(a) {
                 return a.toUpperCase();
             });
-        };
-        
-        self.throttle = function(fn, threshold, scope) {
-            var last;
-            var deferTimer;
-            
+        },
+        // debounce
+        throttle(fn, threshold, scope) {
+            let last;
+            let deferTimer;
+
             threshold = threshold || 500;
-            
-            return function () {
-                var context = scope || this;
-                var now = +new Date(),
+
+            return function() {
+                let context = scope || this;
+                let now = +new Date(),
                     args = arguments;
-            
+
                 if (last && now < last + threshold) {
                     // hold on to it
                     clearTimeout(deferTimer);
-                    deferTimer = setTimeout(function () {
+                    deferTimer = setTimeout(function() {
                         last = now;
                         fn.apply(context, args);
                     }, threshold);
@@ -210,140 +265,221 @@
                     fn.apply(context, args);
                 }
             };
-        };
-
-        self.clearElement = function($el, speed) {
+        },
+        clearElement($el, speed) {
             speed = speed || 300;
 
             $el.fadeOut(speed, function() {
                 $(this).remove();
             });
-        };
+        },
+        clearForm($fields) {
+            $fields.each(function() {
+                let $that = $(this);
+                if ($that.attr('type') === 'checkbox') {
+                    $that.prop('checked', false);
+                } else {
+                    $that.val('');
+                }
+            });
+        },
+        cleanString(str, re) {
+            let reg = new RegExp(re, 'i');
+            return self.trim(str.replace(reg, ''));
+        },
+        getFormData($form) {
+            // get form data and return an object
+            // need to remove dashes from ids
+            let formInput = {};
+            let $fields = $form.find(':input').not('button').not(':checkbox');
+            let $checkboxes = $form.find('input:checked');
 
-        self.createElement = function(tagName, attrs) {
-            attrs = attrs || {};
-            return $('<' + tagName + '></' + tagName + '>', attrs);
-        };
+            if ($checkboxes.length !== 0) {
+                let boxIds = [];
 
-        self.toTop = function($content, speed) {
+                $checkboxes.each(function() {
+                    boxIds.push($(this).attr('id'));
+                });
+
+                boxIds = self.unique(boxIds);
+
+                self.each(boxIds, function() {
+                    let checkboxValues = [];
+                    let $boxes = form.find(`input:checked#${this}`);
+
+                    $boxes.each(function() {
+                        checkboxValues.push(self.trim($(this).val()));
+                    });
+
+                    formInput[this] = checkboxValues;
+                    return;
+                });
+            }
+
+            self.each(fields, function() {
+                let $that = $(this);
+                let id = $that.attr('id');
+                let formInput = [];
+                let input;
+
+                if (self.trim($that.val()) === '') {
+                    input = null;
+                } else {
+                    input = self.trim($that.val());
+                }
+
+                if (input) {
+                    formInput[id] = input;
+                }
+
+                return;
+            });
+
+            return formInput;
+        },
+        // wrapper for creating jquery objects
+        createElement(tagName, attrs = {}) {
+            return $(`<${tagName}></${tagName}>`, attrs);
+        },
+        toTop($content, speed) {
             $content.stop().animate({
                 'scrollTop': $content.position().top
             }, speed, 'swing');
-        };
-
-        self.killEvent = function($el, eventType, selector) {
-            selector = selector || null;
-
-            if ( selector === null ) {
+        },
+        killEvent($el, eventType, selector = null) {
+            if (selector === null) {
                 $el.on(eventType, function(e) {
                     e.stopPropagation();
-                });                
-            } else {
-                $el.on(eventType, selector, function(e) {
-                    e.stopPropagation();
-                });                  
+                });
             }
-        };
 
-        self.scrollToView = function($el, speed) {
-            var scroll = $('body').scrollTop();
-            var height = $(window).height() - 200;
+            $el.on(eventType, selector, function(e) {
+                e.stopPropagation();
+            });
+        },
+        // scrollEvent($el, offset, cb) {
+        //     // TODO: finish thie function
+        //     if ($(document).scrollTop() > $(window).height()) {
+        //         cb();
+        //     }
+        // },
+        scrollToView($el, speed = 300) {
+            const showElement = function(speed) {
+                const scroll = $(document).scrollTop();
+                const height = $(window).height();
 
-            speed = speed || 300;
-
-            if ( scroll > height ) {
-                $el.fadeIn(speed);
-            } else if ( scroll < height ) {
-                $el.fadeOut(speed);
-            }
-        };
-
-        // create an array of unique items from jQuery object text
-        self.toArray = function($items, unique) {
-            var arr = [];
-            unique = unique || false;
-
-            $.each($items, function(key, value) {
-                arr.push($(value).text());
-
-                if ( unique ) {
-                    return $.unique(arr);    
-                } else {
-                    return arr;
+                if (scroll > height) {
+                    $el.fadeIn(speed);
+                } else if (scroll < height) {
+                    $el.fadeOut(speed);
                 }
+            };
+
+            $(window).on('scroll', self.throttle(showElement, 100));
+        },
+        strToArray(str) {
+            const arr = [];
+            const splitStr = str.split(',');
+
+            self.each(splitStr, function() {
+                arr.push(self.trim(this));
             });
 
             return arr;
-        };
+        },
+        isArray(arr) {
+            return Array.isArray(arr);
+        },
+        isArrayLike(obj) {
+            return obj && typeof obj === 'object' && (obj.length === 0 || typeof obj.length === 'number' && obj.length > 0 && obj.length - 1 in obj);
+        },
+        unique(arr) {
+            // const that = this;
+            return arr.filter((v, i, that) => {
+                return that.indexOf(v) === i;
+            });
+        },
+        inArray(arr, item, i) {
+            return (arr == null) ? -1 : arr.indexOf(item, i);
+        },
+        // create an array of unique items from a list
+        toArray(items, unique = false) {
+            const arr = [];
 
+            self.each(items, function() {
+                arr.push(this.textContent);
+
+                if (unique) {
+                    return self.unique(arr);
+                }
+
+                return arr;
+            });
+
+            return arr;
+        },
         // create object keys with arrays for each value in an array
-        self.createArrays = function(obj, list) {
-            $.each(list, function() {
+        createArrays(obj, list) {
+            self.each(list, function() {
                 obj[this] = [];
             });
 
             return obj;
-        };
-
+        },
         // combine an object made up of arrays into a single array
-        self.concatArrays = function(obj) {
-            var arr = [];
+        concatArrays(obj) {
+            let arr = [];
 
-            $.each(obj, function() {
+            self.each(obj, function() {
                 arr = arr.concat(this);
             });
+
             return arr;
-        };
-
+        },
         // test for alpha values and perform alpha sort
-        self.sortValues = function(a, b, dir) {
-            dir = dir || 'ascending';
-
-            if ( self.patterns.alpha.test(a) ) {
-                if ( a < b ) {
-                    return ( dir === 'ascending' ) ? -1 : 1;
-                } else if ( a > b ) {
-                    return ( dir === 'ascending' ) ? 1 : -1;
-                } else if ( a === b ) {
+        sortValues(a, b, dir = 'ascending') {
+            if (this.patterns.alpha.test(a)) {
+                if (a < b) {
+                    return (dir === 'ascending') ? -1 : 1;
+                } else if (a > b) {
+                    return (dir === 'ascending') ? 1 : -1;
+                } else if (a === b) {
                     return 0;
                 }
-            } else {
-                return ( dir === 'ascending' ) ? a - b : b - a;
             }
-        };
 
-        self.sortComplexList = function(types, listItems, direction) {
-            var that = this;
-            var sortLists = {};
-
-            direction = direction || 'ascending';
+            return (dir === 'ascending') ? a - b : b - a;
+        },
+        sortComplexList(types, listItems, dir = 'ascending') {
+            const that = this;
+            const sortLists = {};
 
             // create sortList arrays
-            self.createArrays(sortLists, types);
+            that.createArrays(sortLists, types);
 
             // add list items to sortLists arrays
 
-            $.each(types, function() {
-                var type = this;
-                
-                $.each(listItems, function() {
-                    var listItem = this;
-                    var value = $.trim($(listItem).text());
+            that.each(types, function() {
+                const type = this;
 
-                    if ( self.dataTypeChecks['is' + self.capitalize(type)].call(that, value) ) {
+                that.each(listItems, function() {
+                    const listItem = this;
+                    const val = that.trim($(listItem).text());
+
+                    if (that[`is${that.capitalize(type)}`].call(that, val)) {
                         sortLists[type].push(listItem);
                     } else {
                         return;
                     }
                 });
 
-                $.each(sortLists[type], function() {
-                    var value = ($(this).text());
+                that.each(sortLists[type], function() {
+                    const val = ($(this).text());
 
                     $(listItems).each(function(k) {
-                        var listVal = $(this).text();
+                        const listVal = $(this).text();
 
-                        if (listVal === value) {
+                        if (listVal === val) {
                             listItems.splice(k, 1);
                         }
                     });
@@ -351,216 +487,437 @@
             });
 
             // sort sortLists arrays
-            $.each(sortLists, function(key) {
-                self.comparators['sort' + self.capitalize(key)](sortLists[key], direction);
+            that.each(sortLists, function(key) {
+                that[`sort${that.capitalize(key)}`](sortLists[key], dir);
             });
 
-            // $.each(types, function() {
-            //     var type = this;
-            //     $.each(sortLists[type], function(k, v) {
+            // that.each(types, function() {
+            //     let type = this;
+            //     that.each(sortLists[type], function(k, v) {
             //         console.log($(v).text() + ':' + type);
             //     });
             // });
 
-            return self.concatArrays(sortLists);
-        };
-
-        self.comparators = {
-            sortDate: function($items, direction) {
-                var sort = function(a, b) {
-                    if ( self.dataTypeChecks.isDate($.trim($(a).text())) && self.dataTypeChecks.isDate($.trim($(b).text())) ) {
-                        a = new Date(self.patterns.sortMonthDayYear.exec($.trim($(a).text())));
-                        b = new Date(self.patterns.sortMonthDayYear.exec($.trim($(b).text())));
-                    }
-
-                    return self.sortValues(a, b, direction);
-                };
-
-                return $items.sort(sort);
-            },
-
-            sortTime: function($items, direction) {
-                var sort = function(a, b) {
-                    var time1 = self.patterns.sortTime.exec($.trim($(a).text()))[0];
-                    var time2 = self.patterns.sortTime.exec($.trim($(b).text()))[0];
-
-                    if ( self.dataTypeChecks.isTime($.trim($(a).text())) && self.dataTypeChecks.isTime($.trim($(b).text())) ) {
-                        a = new Date("04-22-2014 " + self.parseTime(time1));
-                        b = new Date("04-22-2014 " + self.parseTime(time2));
-                    }
-
-                    return self.sortValues(a, b, direction);
-                };
-
-                return $items.sort(sort);
-            },
-
-            sortAlpha: function($items, direction) {
-                var sort = function(a, b) {
-                    a = self.cleanAlpha($.trim($(a).text()), ['the', 'a']).toLowerCase();
-                    b = self.cleanAlpha($.trim($(b).text()), ['the', 'a']).toLowerCase();
-
-                    return self.sortValues(a, b, direction);
-                };
-
-                return $items.sort(sort);
-            },
-
-            sortNumber: function($items, direction) {
-                var sort = function(a, b) {
-                    a = parseFloat($.trim($(a).text()));
-                    b = parseFloat($.trim($(b).text()));
-
-                    return self.sortValues(a, b, direction);
-                };
-
-                return $items.sort(sort);
-            },
-
-            sortColumnDate: function($listItems, dir, columnNum) {
-                var sort = function(a,b) {
-                    a = $.trim($(a).find('td').eq(columnNum).text());
-                    b = $.trim($(b).find('td').eq(columnNum).text());
-
-                    if ( self.dataTypeChecks.isDate(a) && self.dataTypeChecks.isDate(b) ) {
-                        a = new Date(self.patterns.monthDayYear.exec(a));
-                        b = new Date(self.patterns.monthDayYear.exec(b));
-                    } else {
-                        return;
-                    }
-
-                    return self.sortValues(a, b, dir);
-                };
-
-                return $listItems.sort(sort);
-            },
-
-            sortColumnTime: function($listItems, dir, columnNum) {
-                var sort = function(a,b) {
-                    a = $.trim($(a).find('td').eq(columnNum).text());
-                    b = $.trim($(b).find('td').eq(columnNum).text());
-
-                    if ( self.dataTypeChecks.isTime(a) && self.dataTypeChecks.isTime(b) ) {
-                        a = new Date('04-22-2014' + self.parseTime(self.patterns.monthDayYear.exec(a)));
-                        b = new Date('04-22-2014' + self.parseTime(self.patterns.monthDayYear.exec(b)));
-                    } else {
-                        return;
-                    }
-
-                    return self.sortValues(a, b, dir);
-                };
-
-                return $listItems.sort(sort);
-            },
-
-            sortColumnAlpha: function($listItems, dir, columnNum) {
-                var ignoreWords = ['a', 'the'];
-                var sort = function(a,b) {
-                    a = self.cleanAlpha($.trim($(a).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
-                    b = self.cleanAlpha($.trim($(b).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
-
-                    return self.sortValues(a, b, dir);
-                };
-
-                return $listItems.sort(sort);
-            },
-
-            sortColumnNumber: function($listItems, dir, columnNum) {
-                var sort = function(a,b) {
-                    a = parseFloat($.trim($(a).find('td').eq(columnNum).text()));
-                    b = parseFloat($.trim($(b).find('td').eq(columnNum).text()));
-
-                    return self.sortValues(a, b, dir);
-                };
-
-                return $listItems.sort(sort);
-            }
-        };
-
-        self.scrollSpy = function($nav, $content, el, activeClass) {
-            var scroll = $('body').scrollTop();
-            var links = $nav.find('a[href^="#"]');
-            var positions = self.findPositions($content, el);
-
-            $.each(positions, function(index, value) {
-                if ( scroll === 0 ) {
-                    $('a.' + activeClass).removeClass(activeClass);
-                    links.eq(0).addClass(activeClass);
-                } else if ( value < scroll ) {
-                    // if value is less than scroll add activeClass to link with the same index
-                    $('a.' + activeClass).removeClass(activeClass);
-                    links.eq(index).addClass(activeClass);
+            return that.concatArrays(sortLists);
+        },
+        sortDate($items, dir) {
+            const sort = (a, b) => {
+                if (this.isDate(this.trim($(a).text())) && this.isDate(this.trim($(b).text()))) {
+                    a = new Date(this.patterns.sortMonthDayYear.exec(this.trim($(a).text())));
+                    b = new Date(this.patterns.sortMonthDayYear.exec(this.trim($(b).text())));
                 }
-            });     
-        };
 
-        self.getPosition = function(height, $obj) {
-            if ( height > 200 ) {
-                return $obj.position().top - ( $obj.height() / 4 );
-            } else {
-                return $obj.position().top - ( $obj.height() / 2 );
+                return this.sortValues(a, b, dir);
+            };
+
+            return $items.sort(sort);
+        },
+        // converts a time string to 24hr time
+        parseTime(time) {
+            const minutes = this.patterns.minute.exec(time)[1];
+            const ampm = this.patterns.ampm.exec(time)[1].toLowerCase();
+            let hour = parseInt(this.patterns.hour.exec(time)[1], 10);
+
+            if (ampm === 'am') {
+                hour = hour.toString();
+
+                if (hour === '12') {
+                    hour = '00';
+                } else if (hour.length === 1) {
+                    hour = `0${hour}`;
+                }
+
+                return `${hour}:${minutes}`;
+
+            } else if (ampm === 'pm') {
+                return `${(hour + 12)}:${minutes}`;
             }
-        };
 
-        self.findPositions = function($content, el) {
-            var $sections = $content.find(el);
-            var positions = [];
+            return 'should be am or pm';
+        },
+        sortTime($items, dir) {
+            const sort = (a, b) => {
+                const time1 = this.patterns.sortTime.exec(this.trim($(a).text()))[0];
+                const time2 = this.patterns.sortTime.exec(this.trim($(b).text()))[0];
+
+                if (this.isTime(this.trim($(a).text())) && this.isTime(this.trim($(b).text()))) {
+                    a = new Date(`04-22-2014 ${this.parseTime(time1)}`);
+                    b = new Date(`04-22-2014 ${this.parseTime(time2)}`);
+                }
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $items.sort(sort);
+        },
+        sortAlpha($items, dir) {
+            const sort = (a, b) => {
+                a = this.cleanAlpha(this.trim($(a).text()), ['the', 'a']).toLowerCase();
+                b = this.cleanAlpha(this.trim($(b).text()), ['the', 'a']).toLowerCase();
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $items.sort(sort);
+        },
+        sortNumber($items, dir) {
+            const sort = (a, b) => {
+                a = parseFloat(this.trim($(a).text()));
+                b = parseFloat(this.trim($(b).text()));
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $items.sort(sort);
+        },
+        sortColumnDate($listItems, dir, columnNum) {
+            const sort = (a, b) => {
+                a = this.trim($(a).find('td').eq(columnNum).text());
+                b = this.trim($(b).find('td').eq(columnNum).text());
+
+                if (this.isDate(a) && this.isDate(b)) {
+                    a = new Date(this.patterns.monthDayYear.exec(a));
+                    b = new Date(this.patterns.monthDayYear.exec(b));
+
+                    return this.sortValues(a, b, dir);
+                }
+
+                return;
+            };
+
+            return $listItems.sort(sort);
+        },
+        sortColumnTime($listItems, dir, columnNum) {
+            const sort = (a, b) => {
+                a = this.trim($(a).find('td').eq(columnNum).text());
+                b = this.trim($(b).find('td').eq(columnNum).text());
+
+                if (this.isTime(a) && this.isTime(b)) {
+                    a = new Date(`04-22-2014 ${this.parseTime(this.patterns.monthDayYear.exec(a))}`);
+                    b = new Date(`04-22-2014 ${this.parseTime(this.patterns.monthDayYear.exec(b))}`);
+                } else {
+                    return;
+                }
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $listItems.sort(sort);
+        },
+        sortColumnAlpha($listItems, dir, columnNum) {
+            const ignoreWords = ['a', 'the'];
+            const sort = (a, b) => {
+                a = this.cleanAlpha(this.trim($(a).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
+                b = this.cleanAlpha(this.trim($(b).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $listItems.sort(sort);
+        },
+        sortColumnNumber($listItems, dir, columnNum) {
+            const sort = (a, b) => {
+                a = parseFloat(this.trim($(a).find('td').eq(columnNum).text()));
+                b = parseFloat(this.trim($(b).find('td').eq(columnNum).text()));
+
+                return this.sortValues(a, b, dir);
+            };
+
+            return $listItems.sort(sort);
+        },
+        scrollSpy($nav, $content, el, activeClass) {
+            const scroll = $(document).scrollTop();
+            const $links = $nav.find('a[href^="#"]');
+            const positions = this.findPositions($content, el);
+
+            this.each(positions, function(index, value) {
+                if (scroll === 0) {
+                    $nav.find(`a.${activeClass}`).removeClass(activeClass);
+                    $links.eq(0).addClass(activeClass);
+                } else if (value < scroll) {
+                    // if value is less than scroll add activeClass to link with the same index
+                    $nav.find(`a.${activeClass}`).removeClass(activeClass);
+                    $links.eq(index).addClass(activeClass);
+                }
+            });
+        },
+        getPosition(height, $obj) {
+            if (height > 200) {
+                return $obj.position().top - ($obj.height() / 4);
+            }
+
+            return $obj.position().top - ($obj.height() / 2);
+        },
+        findPositions($content, el) {
+            const $sections = $content.find(el);
+            const positions = [];
 
             // populate positions array with the position of the top of each section element
             $sections.each(function(index) {
-                var $that = $(this);
-                var length = $sections.length;
-                var position;
+                const $that = $(this);
+                const length = $sections.length;
+                let position;
 
                 // the first element's position should always be 0
-                if ( index === 0 ) {
+                if (index === 0) {
                     position = 0;
-                } else if ( index === ( length - 1 ) ) {
-                    // subtract the bottom container's full height so final scroll value is equivalent 
+                } else if (index === (length - 1)) {
+                    // subtract the bottom container's full height so final scroll value is equivalent
                     // to last container's position
-                    position = self.getPosition( $that.height, $that );
+                    position = self.getPosition($that.height, $that);
                 } else {
                     // for all other elements correct position by only subtracting half of its height
                     // from its top position
-                    position = $that.position().top - ( $that.height() / 4 );
+                    position = $that.position().top - ($that.height() / 4);
                 }
 
                 // correct for any elements _that may have a negative position value
 
-                if ( position < 0 ) {
-                    positions.push(0); 
+                if (position < 0) {
+                    positions.push(0);
                 } else {
                     positions.push(position);
                 }
             });
 
             return positions;
-        };
+        },
+        // forces link to open in a new tab
+        openInTab($links) {
+            $links.on('click', function(e) {
+                e.preventDefault();
+                window.open($(this).attr('href'), '_blank');
+            });
+        },
+        isMobile(mobileWidth = 568) {
+            return ($(window).width() <= mobileWidth) ? true : false;
+        },
+        // assigns a random class to an element.
+        // useful for random backgrounds/styles
+        randomClass(classList = [], $el) {
+            elr.each(classList, function(index, value) {
+                $el.removeClass(value);
+            });
 
-        // converts a time string to 24hr time
-        self.parseTime = function(time) {
-            var hour = parseInt(self.patterns.hour.exec(time)[1], 10);
-            var minutes = self.patterns.minute.exec(time)[1];
-            var ampm = self.patterns.ampm.exec(time)[1].toLowerCase();
+            $el.addClass(classList[Math.floor(Math.random() * classList.length)]);
+        },
+        // smooth scroll to section of page
+        // put id of section in href attr of link
+        gotoSection() {
+            const section = $(this).attr('href').split('#').pop();
 
-            if ( ampm === 'am' ) {
-                hour = hour.toString();
-                
-                if ( hour === '12' ) {
-                    hour = '0';
-                } else if ( hour.length === 1 ) {
-                    hour = '0' + hour;
+            $('body, html').stop().animate({
+                'scrollTop': $(`#${section}`).position().top
+            });
+
+            return false;
+        },
+        closest(el, selector) {
+            let firstEl = el[0];
+            const matchesSelector = firstEl.matches || firstEl.msMatchesSelector;
+            const els = [];
+            let closestEl;
+
+            while (firstEl) {
+                if (matchesSelector.call(firstEl, selector)) {
+                    break;
                 }
 
-                return hour + ':' + minutes;
-
-            } else if ( ampm === 'pm' ) {
-                return (hour + 12) + ':' + minutes;
+                firstEl = firstEl.parentElement;
             }
-        };
 
-        return self;
+            els.push(closestEl);
+
+            return els;
+        },
+        // checkCollectionLength(collection) {
+        //     // make sure an element with the index exists in the collection
+        //     if (collection.length < index + 1) {
+        //         console.log('There is no element with that index');
+
+        //         return false;
+        //     }
+
+        //     return true;
+        // },
+        // get element in the collection with the provided index
+        eq(collection, index) {
+            const els = [];
+
+            const parent = (self.parent(collection).length > 1) ? self.parent(collection)[0] : self.parent(collection);
+
+            console.log(parent);
+
+            const checkCollectionLength = function(collection) {
+                // make sure an element with the index exists in the collection
+                if (collection.length < index + 1) {
+                    console.log('There is no element with that index');
+
+                    return false;
+                }
+
+                return true;
+            };
+
+            const children = checkCollectionLength(collection) ? parent[0].children : null;
+
+            els.push(children[index]);
+
+            return els;
+        },
+        // get the index of the provided element
+        index(el) {
+            const parent = self.parent(el);
+
+            return Array.prototype.indexOf.call(parent[0].children, el[0]);;
+        },
+        matches(el, selector) {
+            const matchesSelector = el.matches || el.msMatchesSelector;
+
+            if (matchesSelector.call(el, selector)) {
+                return el;
+            } else {
+                return null;
+            }
+        },
+        // get elements not matching the given criteria
+        not(collection, filter) {
+            const filtered = [];
+
+            for (var i = 0; i < collection.length; i++) {
+                if (!self.matches(collection[i], filter)) {
+                    filtered.push(collection[i]);
+                }
+            }
+
+            return filtered;
+        },
+        even(collection) {
+            const filtered = [];
+
+            for (var i = 0; i < collection.length; i++) {
+                if (((self.index([collection[i]]) + 1) % 2) === 0) {
+                    filtered.push(collection[i]);
+                }
+            }
+
+            return filtered;
+        },
+        odd(collection) {
+            const filtered = [];
+
+            for (var i = 0; i < collection.length; i++) {
+                if (((self.index([collection[i]]) + 1) % 2) !== 0) {
+                    filtered.push(collection[i]);
+                }
+            }
+
+            return filtered;
+        },
+        // get the data value from the given element
+        data(el, dataName) {
+            const data = el[0].dataset[dataName];
+
+            if (typeof data !== 'undefined') {
+                return data;
+            }
+
+            console.log('there is no data attribute with this name');
+
+            return;
+        },
+        // get the first element in the collection
+        first(collection) {
+            return collection[0];
+        },
+        // get the last element in the collection
+        last(collection) {
+            if (collection.length > 1) {
+                return collection[collection.length - 1];
+            }
+
+            return collection[0];
+        },
+        // returns parent of the first element if a collection is provided
+        parent(el, selector = null) {
+            // get the parent elements for each element in the collection
+            // if they are the same parent only return a single item
+            const parents = [];
+
+            for (var i = 0; i < el.length; i++) {
+                if (selector) {
+                    parents.push(self.matches(el[i].parentNode, selector));
+                } else {
+                    parents.push(el[i].parentNode);
+                }
+            }
+
+            return self.unique(parents);
+        },
+        // return all of the element's parents through the entire dom tree
+        parents(el, selector = null) {
+            let firstEl = el[0];
+            const parents = [];
+
+            while (firstEl) {
+                if (firstEl.tagName && typeof firstEl.tagName !== 'undefined' && firstEl.tagName !== 'HTML') {
+                    parents.push(firstEl.parentNode);
+                }
+
+                firstEl = el.parentNode;
+            }
+
+            return parents;
+        },
+        // children
+        children(el, selector = null) {
+            return children;
+        },
+        prev(el, selector = null) {
+            return prevElement;
+        },
+        next(el, selector = null) {
+            return nextElement;
+        },
+        // find
+        find(selector, collection = null) {
+            return collection;
+        },
+        // hasClass
+        hasClass(el, className) {
+            return false;
+        },
+        // addClass
+        addClass(el, className) {
+            return;
+        },
+        // removeClass
+        removeClass(el, className) {
+            return;
+        },
+        // toggleClass
+        toggleClass(el, className) {
+            return;
+        },
+        // clone
+        clone(el) {
+            return clone;
+        },
+        // css
+        css(el, css = {}) {
+            return;
+        },
+        // appendTo
+        appendTo(el, target) {
+            return;
+        },
+        // prependTo
+        prependTo(el, target) {
+            return;
+        }
     };
 
-    window.elr = elrUtilities();
-})(jQuery);
+    return self;
+};
+
+export default elrUtilities;

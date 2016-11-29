@@ -1,20 +1,5 @@
-# ELR Utility Library
-
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
-
-A jQuery component
-### Dependencies:
-
-+ jQuery
-
-### Features:
-
-### Config:
-
-### Example Usage:
-
-#### Sample html
+# ELR Utilitiy Lib
 
 ###License
 
-ELR-Utility Library is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+ELR-Utilitiy Lib is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
