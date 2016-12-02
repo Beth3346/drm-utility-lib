@@ -1,14 +1,11 @@
 {
   "name": "elr-utility-lib",
-  "version": "1.0.5",
   "description": "JavaScript Utility Library",
-  "main": "dist/elr-utility-lib.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Beth3346/elr-utility-lib.git"
-  },
-  "scripts": {
-    "build": "build"
+  "version": "1.0.5",
+  "author": "Elizabeth Rogers",
+  "bugs": {
+    "url": "https://github.com/Beth3346/elr-utility-lib",
+    "email": "beth@elizabeth-rogers.com"
   },
   "dependencies": {
     "babel-runtime": "^6.0.0",
@@ -23,5 +20,18 @@
     "gulp-jshint": "^2.0.1",
     "gulp-sourcemaps": "^2.1.1",
     "jshint": "^2.9.3"
+  },
+  "homepage": "http://www.elizabeth-rogers.com/elr-utilities/js-utility-lib.html",
+  "keywords": [
+    "javascript, jquery, utility, ui"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "main": "dist/elr-utility-lib.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Beth3346/elr-utility-lib.git"
+  },
+  "scripts": {
+    "build": "build"
   }
 }
