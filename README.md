@@ -1,4 +1,6 @@
-# elr-utility-lib 
+# elr-utility-lib
+
+[![Build Status](https://travis-ci.org/Beth3346/elr-utility-lib.svg?branch=master)](https://travis-ci.org/Beth3346/elr-utility-lib)
 
 JavaScript Utility Library
 

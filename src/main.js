@@ -10,20 +10,20 @@ const elrUtilities = function() {
     const self = {
         // TODO: add support for sorting datetime values
         patterns: {
-            numeral: new RegExp('[0-9]+'),
-            alphaLower: new RegExp('[a-z]+'),
-            alphaUpper: new RegExp('[A-Z]+'),
-            specialCharacters: new RegExp('[^a-zA-Z0-9_]'),
-            allNumbers: new RegExp('^[0-9]*$'),
-            allAlphaLower: new RegExp('^[a-z]*$'),
-            allAlphaUpper: new RegExp('^[A-Z]*$'),
-            allSpecialCharacters: new RegExp('^[^a-zA-Z0-9_]*$'),
-            hour: new RegExp('^(\\d+)'),
-            minute: new RegExp(':(\\d+)'),
-            ampm: new RegExp('(am|pm|AM|PM)$'),
+            numeral: /[0-9]+/,
+            alphaLower: /[a-z]+/,
+            alphaUpper: /[A-Z]+/,
+            specialCharacters: /[^a-zA-Z0-9_]/,
+            allNumbers: /^[0-9]*$/,
+            allAlphaLower: /^[a-z]*$/,
+            allAlphaUpper: /^[A-Z]*$/,
+            allSpecialCharacters: /^[^a-zA-Z0-9_]*$/,
+            hour: /^(\\d+)/,
+            minute: /:(\\d+)/,
+            ampm: /(am|pm|AM|PM)$/,
             // an integer can be negative or positive and can include one comma separator followed by exactly 3 numbers
-            integer: new RegExp('(^\\-?\\d*$)|(^\\-?\\d*(,\\d{3})*$)'),
-            number: new RegExp('^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)$'),
+            integer: /(^\\-?\\d*$)|(^\\-?\\d*(,\\d{3})*$)/,
+            number: /^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)$/,
             url: new RegExp('^https?:\\/\\/[\\da-z\\.\\-]+[\\.a-z]{2,6}[\\/\\w/.\\-]*\\/?$','i'),
             email: new RegExp('^[a-z][a-z\\-\\_\\.\\d]*@[a-z\\-\\_\\.\\d]*\\.[a-z]{2,6}$','i'),
             // validates 77494 and 77494-3232
@@ -50,7 +50,7 @@ const elrUtilities = function() {
             longDate: new RegExp('^(?:[a-z]*[\\.,]?\\s)?[a-z]*\\.?\\s(?:[3][01],?\\s|[012][1-9],?\\s|[1-9],?\\s)[0-9]{4}$', 'i'),
             shortDate: new RegExp('((?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4})'),
             longTime: new RegExp('((?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\\:[012345][0-9])?(?:am|pm)?)', 'i'),
-            longMonth: new RegExp('^(?:[a-zA-Z]*[\\.,]?\\s)?[a-zA-Z]*'),
+            longMonth: new RegExp('\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)'),
             dateNumber: new RegExp('[\\s\/\\-\\.](?:([3][01]),?[\\s\/\\-\\.]?|([012][1-9]),?[\\s\/\\-\\.]?|([1-9]),?[\\s\/\\-\\.]?)'),
             year: new RegExp('([0-9]{4})'),
             dateKeywords: new RegExp('^(yesterday|today|tomorrow)', 'i'),
@@ -869,52 +869,56 @@ const elrUtilities = function() {
 
             return parents;
         },
-        // children
-        children(el, selector = null) {
-            return children;
-        },
-        prev(el, selector = null) {
-            return prevElement;
-        },
-        next(el, selector = null) {
-            return nextElement;
-        },
-        // find
-        find(selector, collection = null) {
-            return collection;
-        },
-        // hasClass
-        hasClass(el, className) {
-            return false;
-        },
-        // addClass
-        addClass(el, className) {
-            return;
-        },
-        // removeClass
-        removeClass(el, className) {
-            return;
-        },
-        // toggleClass
-        toggleClass(el, className) {
-            return;
-        },
-        // clone
-        clone(el) {
-            return clone;
-        },
-        // css
-        css(el, css = {}) {
-            return;
-        },
-        // appendTo
-        appendTo(el, target) {
-            return;
-        },
-        // prependTo
-        prependTo(el, target) {
-            return;
-        }
+        // // children
+        // children(el, selector = null) {
+        //     return children;
+        // },
+        // prev(el, selector = null) {
+        //     return prevElement;
+        // },
+        // next(el, selector = null) {
+        //     return nextElement;
+        // },
+        // // find
+        // find(selector, collection = null) {
+        //     return collection;
+        // },
+        // // hasClass
+        // hasClass(el, className) {
+        //     return false;
+        // },
+        // // addClass
+        // addClass(el, className) {
+        //     return;
+        // },
+        // // removeClass
+        // removeClass(el, className) {
+        //     return;
+        // },
+        // // toggleClass
+        // toggleClass(el, className) {
+        //     return;
+        // },
+        // // clone
+        // clone(el) {
+        //     return clone;
+        // },
+        // // css
+        // css(el, css = {}) {
+        //     return;
+        // },
+        // // appendTo
+        // appendTo(el, target) {
+        //     return;
+        // },
+        // // prependTo
+        // prependTo(el, target) {
+        //     return;
+        // },
+        // // extend obj
+        // extendObj(obj, newObj = {}) {
+        //     return;
+        // }
     };
 
     return self;
