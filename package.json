@@ -26,6 +26,7 @@
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^2.1.1",
+    "istanbul": "^0.4.5",
     "jshint": "^2.9.3",
     "mocha": "^3.2.0",
     "mocha-notifier-reporter": "^0.1.2",
@@ -45,6 +46,6 @@
     "build": "build",
     "test": "mocha --compilers js:babel-core/register",
     "test watch": "mocha watch --compilers js:babel-core/register",
-    "report-coverage": "cat ./coverage/lcov.info | codecov"
+    "report-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && codecov"
   }
 }
