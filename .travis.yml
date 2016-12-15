@@ -1,6 +1,17 @@
+sudo: false
 language: node_js
 node_js:
-  - node
+  - 0.12.0
+  - 4
+  - 6
+cache:
+  directories:
+    - node_modules
+branches:
+  only:
+    -master
+notificiations:
+  email: false
 before_script:
   - npm install
   - npm install -g gulp

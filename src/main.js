@@ -13,40 +13,40 @@ const elrUtilities = function() {
             numeral: /[0-9]+/,
             alphaLower: /[a-z]+/,
             alphaUpper: /[A-Z]+/,
-            specialCharacters: /[^a-zA-Z0-9_]/,
+            specialCharacters: /[^a-zA-Z0-9_\s]+/,
             allNumbers: /^[0-9]*$/,
             allAlphaLower: /^[a-z]*$/,
             allAlphaUpper: /^[A-Z]*$/,
             allSpecialCharacters: /^[^a-zA-Z0-9_]*$/,
-            hour: /^(\\d+)/,
-            minute: /:(\\d+)/,
-            ampm: /(am|pm|AM|PM)$/,
             // an integer can be negative or positive and can include one comma separator followed by exactly 3 numbers
-            integer: /(^\\-?\\d*$)|(^\\-?\\d*(,\\d{3})*$)/,
-            number: /^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)$/,
-            url: new RegExp('^https?:\\/\\/[\\da-z\\.\\-]+[\\.a-z]{2,6}[\\/\\w/.\\-]*\\/?$','i'),
-            email: new RegExp('^[a-z][a-z\\-\\_\\.\\d]*@[a-z\\-\\_\\.\\d]*\\.[a-z]{2,6}$','i'),
-            // validates 77494 and 77494-3232
-            postalCode: new RegExp('^[0-9]{5}-[0-9]{4}$|^[0-9]{5}$'),
-            // validates United States phone number patterns
-            phone: new RegExp('^\\(?\\d{3}[\\)\\-\\.]?[\\s]?\\d{3}[\\-\\.]?\\d{4}(?:[xX]\\d+)?$','i'),
+            integer: /(^\-?\d*$)|(^\-?\d*(,\d{3})*$)/,
+            number: /^(?:\-?\d+|\d*)(?:\.?\d+|\d)$/,
             // allows alpha . - and ensures that the user enters both a first and last name
-            fullName: new RegExp('^[a-z]+ [a-z\\.\\- ]+$','i'),
-            alpha: new RegExp('[a-z]*','i'),
-            allAlpha: new RegExp('^[a-z\\-\\s]*$','i'),
-            alphaNum: new RegExp('^[a-z\\d ]*$','i'),
-            spaces: new RegExp('^[\\S]*$','i'),
+            fullName: /^([a-z- ]+ [a-z- .]+)$/i,
+            alpha: /[a-z]/i,
+            allAlpha: /^[a-z\-\s]*$/i,
+            alphaNum: /^[a-z\d ]*$/i,
+            username: /^[a-z\d\_]*$/i,
+            spaces: /[\s]/i,
+            website: /^((?:https?):[\/]{2}(?:[w]{3}\.)(?:[a-zA-z]+)(?:[.][a-zA-Z]{2,4}))$/i,
+            url: /^https?:[\/]{2}(?:[w]{3}\.{1})?(?:[a-zA-Z-_\d]+)\.[a-zA-Z]{2,4}(?:\/[a-zA-Z-_]+)*/i,
+            email: /^[a-z][a-z\-\_\.\d]*@[a-z\-\_\.\d]*\.[a-z]{2,6}$/i,
+            // validates 77494 and 77494-3232
+            postalCode: /^[0-9]{5}-[0-9]{4}$|^[0-9]{5}$/,
+            // validates United States phone number patterns
+            phone: /^((?:\d{3}[)-.])?(?:[\s]?\d{3})(?:[\-\.]?\d{4})(?:[xX]\d+)?)$/i,
             alphaNumDash: new RegExp('^[a-z\\d- ]*$','i'),
-            // allows alphanumeric characters and underscores; no spaces; recommended for usernames
-            alphaNumUnderscore: new RegExp('^[a-z\\d_]*$','i'),
             tags: new RegExp('<[a-z]+.*>.*<\/[a-z]+>','i'),
+            // matched all major cc
+            creditCard: new RegExp('^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$'),
+            cvv: new RegExp('^[0-9]{3,4}$'),
             // mm/dd/yyyy
             monthDayYear: new RegExp('^(?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4}$'),
             // 00:00pm
             time: new RegExp('^(?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\/:[012345][0-9])?(?:am|pm)$', 'i'),
-            // matched all major cc
-            creditCard: new RegExp('^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$'),
-            cvv: new RegExp('^[0-9]{3,4}$'),
+            hour: /^(\\d+)/,
+            minute: /:(\\d+)/,
+            ampm: /(am|pm|AM|PM)$/,
             longDate: new RegExp('^(?:[a-z]*[\\.,]?\\s)?[a-z]*\\.?\\s(?:[3][01],?\\s|[012][1-9],?\\s|[1-9],?\\s)[0-9]{4}$', 'i'),
             shortDate: new RegExp('((?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4})'),
             longTime: new RegExp('((?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\\:[012345][0-9])?(?:am|pm)?)', 'i'),
