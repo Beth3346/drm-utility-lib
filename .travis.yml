@@ -10,7 +10,7 @@ cache:
 branches:
   only:
     -master
-notificiations:
+notifications:
   email: false
 before_script:
   - npm install
