@@ -44,7 +44,6 @@
   "scripts": {
     "build": "build",
     "test": "mocha --compilers js:babel-core/register",
-    "test watch": "mocha watch --compilers js:babel-core/register",
-    "report-coverage": "cat ./coverage/lcov.info | codecov"
+    "test watch": "mocha watch --compilers js:babel-core/register"
   }
 }
