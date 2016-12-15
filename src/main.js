@@ -305,7 +305,7 @@ const elrUtilities = function() {
 
                 self.each(boxIds, function() {
                     let checkboxValues = [];
-                    let $boxes = form.find(`input:checked#${this}`);
+                    let $boxes = $form.find(`input:checked#${this}`);
 
                     $boxes.each(function() {
                         checkboxValues.push(self.trim($(this).val()));
@@ -316,7 +316,7 @@ const elrUtilities = function() {
                 });
             }
 
-            self.each(fields, function() {
+            self.each($fields, function() {
                 let $that = $(this);
                 let id = $that.attr('id');
                 let formInput = [];
@@ -694,8 +694,8 @@ const elrUtilities = function() {
         },
         // assigns a random class to an element.
         // useful for random backgrounds/styles
-        randomClass(classList = [], $el) {
-            elr.each(classList, function(index, value) {
+        randomClass($el, classList = []) {
+            this.each(classList, function(index, value) {
                 $el.removeClass(value);
             });
 
@@ -769,7 +769,7 @@ const elrUtilities = function() {
         index(el) {
             const parent = self.parent(el);
 
-            return Array.prototype.indexOf.call(parent[0].children, el[0]);;
+            return Array.prototype.indexOf.call(parent[0].children, el[0]);
         },
         matches(el, selector) {
             const matchesSelector = el.matches || el.msMatchesSelector;
