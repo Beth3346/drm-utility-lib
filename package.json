@@ -47,12 +47,21 @@
       "pre-commit": "gulp"
     }
   },
+  "nyc": {
+    "check-coverage": true,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0,
+    "statements": 0,
+    "include": [
+      "src/*.js"
+    ]
+  },
   "scripts": {
     "build": "build",
     "test": "nyc mocha test/test.js --compilers js:babel-core/register",
     "test watch": "nyc mocha test/test.js watch --compilers js:babel-core/register",
     "cover": "nyc --reporter=lcov npm test",
-    "check-coverage": "nyc check-coverage --statements 0 --branches 0 --functions 0 --lines 0",
     "report-coverage": "cat ./coverage/lcov.info | codecov"
   }
 }

@@ -283,4 +283,20 @@ describe('elr', function() {
             expect(elr.trim('   hello')).to.equal('hello');
         });
     });
+    describe('#isOdd', function() {
+        it('should return true if an odd number is provided', function() {
+            expect(elr.isOdd(1)).to.be.true;
+        });
+        it('should return false if an even number is provided', function() {
+            expect(elr.isOdd(4)).to.be.false;
+        });
+    });
+    describe('#isEven', function() {
+        it('should return false if an odd number is provided', function() {
+            expect(elr.isEven(1)).to.be.false;
+        });
+        it('should return true if an even number is provided', function() {
+            expect(elr.isEven(4)).to.be.true;
+        });
+    });
 });

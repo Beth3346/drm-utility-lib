@@ -6,4 +6,4 @@ before_script:
   - npm install -g gulp
   - gulp
 after_success:
-  -npm run report-coverage
+  - npm run report-coverage
