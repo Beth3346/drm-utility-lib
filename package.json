@@ -27,12 +27,10 @@
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^2.1.1",
-    "istanbul": "^0.4.5",
     "jshint": "^2.9.3",
     "mocha": "^3.2.0",
     "mocha-notifier-reporter": "^0.1.2",
-    "nyc": "^10.0.0",
-    "through2": "^2.0.3"
+    "nyc": "^10.0.0"
   },
   "homepage": "http://www.elizabeth-rogers.com/elr-utilities/js-utility-lib.html",
   "keywords": [
@@ -46,10 +44,10 @@
   },
   "scripts": {
     "build": "build",
-    "test": "mocha --compilers js:babel-core/register",
-    "test watch": "mocha watch --compilers js:babel-core/register",
+    "test": "nyc mocha --compilers js:babel-core/register",
+    "test watch": "nyc mocha watch --compilers js:babel-core/register",
     "cover": "nyc --reporter=lcov npm t",
-    "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
+    "check-coverage": "nyc check-coverage --statements 0 --branches 0 --functions 0 --lines 0",
     "report-coverage": "cat ./coverage/lcov.info | codecov"
   }
 }
