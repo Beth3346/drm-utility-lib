@@ -261,6 +261,17 @@ describe('elr patterns', function() {
         it('should return false if the postal code is 9 digits with no dash', function() {
             expect(elr.patterns.postalCode.test('774943232')).to.be.false;
         });
+        it('should return false if the postal code is 6 digits', function() {
+            expect(elr.patterns.postalCode.test('774943')).to.be.false;
+        });
+        it('should return false if the postal code has alpha characters', function() {
+            expect(elr.patterns.postalCode.test('7749f')).to.be.false;
+        });
+    });
+    describe('phone regex', function() {
+        it('should return true if the phone # is valid', function() {
+            expect(elr.patterns.phone.test('281-123-4567')).to.be.true;
+        });
     });
 });
 

@@ -4,9 +4,9 @@ import jshint from 'gulp-jshint';
 import babel from 'gulp-babel';
 import path from 'path';
 import mocha from 'gulp-mocha';
-import plumber from 'gulp-plumber';
-import notify from 'gulp-notify';
-import notifierReporter from 'mocha-notifier-reporter';
+import plumber from'gulp-plumber';
+import notify from'gulp-notify';
+import through from'through2';
 
 gulp.task('clean:scripts', function() {
     return del([
@@ -17,16 +17,21 @@ gulp.task('clean:scripts', function() {
 gulp.task('jshint', ['test'], function() {
     return gulp.src(['src/main.js'])
         .pipe(jshint())
-        .pipe(jshint.reporter('default'))
-        // Use gulp-notify as jshint reporter
-        .pipe(notify(function (file) {
-          if (file.jshint.success) {
-            return "No JS Linting Errors :)";
-          }
-          var errors = file.jshint.results.map(function (data) {
-          }).join("\n");
-          return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
-        }));
+    // Use gulp-notify as jshint reporter
+    .pipe(notify(function (file) {
+      if (file.jshint.success) {
+        // Don't show something if success
+        return false;
+      }
+
+      var errors = file.jshint.results.map(function (data) {
+        if (data.error) {
+          return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+        }
+      }).join("\n");
+      return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
+    }));
+        // .pipe(jshint.reporter('default'));
 });
 
 gulp.task('babel', ['jshint'], function() {
@@ -34,8 +39,7 @@ gulp.task('babel', ['jshint'], function() {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(gulp.dest(`dist`))
-        .pipe(notify({ message: 'Babel transpiled successfully' }));
+        .pipe(gulp.dest(`dist`));
 });
 
 gulp.task('scripts', ['babel'], function() {
@@ -47,8 +51,12 @@ gulp.task('scripts', ['babel'], function() {
 gulp.task('test', function() {
   return gulp.src(['test/test.js'], { read: false })
     .pipe(mocha({
-      reporter: notifierReporter.decorate('spec')
-    }));
+      reporter: 'spec'
+    }))
+    .pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}));
+    // .pipe(through(function () {
+    //     this.emit("error", new Error("Something happend: Error message!"))
+    // }));
 });
 
 gulp.task('default', ['scripts']);
