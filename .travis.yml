@@ -8,3 +8,6 @@ before_script:
   - npm run cover
 after_success:
   - npm run report-coverage
+addons:
+    code_climate:
+        repo_token: 79e8887b60314c6ff14a71a25956794143c4a84991e9148285eda74c57f5b85f
