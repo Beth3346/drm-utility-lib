@@ -5,9 +5,15 @@ const expect = require('chai').expect;
 const chai = require('chai');
 const assertArrays = require('chai-arrays');
 const chaiSubset = require('chai-subset');
+const chaiObject = require('chai-shallow-deep-equal');
+const chaiJquery = require('chai-jquery');
+
+global.$ = global.jQuery = require('jquery');
 
 chai.use(assertArrays);
 chai.use(chaiSubset);
+chai.use(chaiObject);
+// chai.use(chaiJquery);
 
 describe('elr patterns', function() {
     describe('numeric regex', function() {
@@ -422,6 +428,12 @@ describe('elr patterns', function() {
 });
 
 describe('elr', function() {
+    before(() => {
+        const $ = require('jquery');
+        global.$ = $;
+        global.jQuery = $;
+    });
+
     describe('#each', function() {
         it('should iterate over an array', function() {
             const times5 = function(nums) {
@@ -469,6 +481,9 @@ describe('elr', function() {
             expect(elr.trim('hello  ')).to.equal('hello');
             expect(elr.trim('   hello  ')).to.equal('hello');
             expect(elr.trim('   hello')).to.equal('hello');
+        });
+        it('should return false if no string is provided', function () {
+            expect(elr.trim('')).to.be.false;
         });
     });
     describe('#isOdd', function() {
@@ -625,6 +640,73 @@ describe('elr', function() {
             expect(elr.isArray(objArr)).to.be.true;
             expect(elr.isArray(str)).to.be.false;
             expect(elr.isArray(num)).to.be.false;
+        });
+    });
+    describe('#unique', function() {
+        it('should return an array of unique values', function() {
+            const arr = ['dogs', 'cats', 'cats', 'dogs', 'birds', 'rabbits'];
+            expect(elr.unique(arr)).to.containSubset(['cats', 'dogs', 'birds', 'rabbits']);
+            expect(elr.unique(arr)).to.be.ofSize(4);
+        });
+    });
+    describe('#inArray', function() {
+        it('should return the index if the item exists in the array', function() {
+            const arr = ['Mary', 'Jo', 'Beth', 'Amy'];
+            expect(elr.inArray(arr, 'Jo')).to.equal(1);
+        });
+        it('should return -1 if the item does not exist in the array', function() {
+            const arr = ['Mary', 'Jo', 'Beth', 'Amy'];
+            expect(elr.inArray(arr, 'Laurie')).to.equal(-1);
+        });
+        it('should take a starting index', function() {
+            const arr = ['Mary', 'Jo', 'Beth', 'Amy'];
+            expect(elr.inArray(arr, 'Mary', 1)).to.equal(-1);
+            expect(elr.inArray(arr, 'Beth', 1)).to.equal(2);
+        });
+        xit('should take a negative starting index', function() {
+            const arr = ['Mary', 'Jo', 'Beth', 'Amy'];
+            expect(elr.inArray(arr, 'Jo', -1)).to.equal(1);
+        });
+    });
+    describe('#toArray', function() {
+        const items = {
+            'dog1': {'textContent': 'Jessie'},
+            'dog2': {'textContent': 'Musashi'},
+            'dog3': {'textContent': 'Chloe'}
+        };
+        it('should take a list of items and create an array', function() {
+            expect(elr.toArray(items)).to.be.equalTo(['Jessie', 'Musashi', 'Chloe']);
+        });
+    });
+    describe('#createArrays', function() {
+        it('should create an object with arrays', function() {
+            const list = ['dogs', 'cats', 'birds'];
+            const animals = {
+                'dogs': [],
+                'cats': [],
+                'birds': []
+            };
+            expect(elr.createArrays(list)).to.shallowDeepEqual(animals);
+        });
+    });
+    describe('#concatArrays', function() {
+        it('should contact an object with properties as arrays into a single array', function() {
+            const arrayObj = {
+                'dogs': ['Jessie', 'Chloe', 'Musashi', 'Hogan'],
+                'cats': ['Tom', 'Sylvester'],
+                'birds': ['Tweety', 'Toucan Sam']
+            };
+            const combinedArr = [
+                'Jessie',
+                'Chloe',
+                'Musashi',
+                'Hogan',
+                'Tom',
+                'Sylvester',
+                'Tweety',
+                'Toucan Sam'
+            ];
+            expect(elr.concatArrays(arrayObj)).to.be.equalTo(combinedArr);
         });
     });
 });

@@ -49,13 +49,13 @@ const elrUtilities = function() {
             ampm: /(am|pm|AM|PM)$/,
             longDate: /^(?:[a-z]*[\.,]?\s)?[a-z]*\.?\s(?:[3][01],?\s|[012][1-9],?\s|[1-9],?\s)[0-9]{4}$/i,
             // shortDate: this.monthDayYear,
-            longTime: new RegExp('((?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\\:[012345][0-9])?(?:am|pm)?)', 'i'),
+            longTime: /((?:[12][012]:|[0]?[0-9]:)[012345][0-9](?::[012345][0-9])?(?:am|pm)?)/i,
             longMonth: /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)/,
-            dateNumber: new RegExp('[\\s\/\\-\\.](?:([3][01]),?[\\s\/\\-\\.]?|([012][1-9]),?[\\s\/\\-\\.]?|([1-9]),?[\\s\/\\-\\.]?)'),
-            year: new RegExp('([0-9]{4})'),
-            dateKeywords: new RegExp('^(yesterday|today|tomorrow)', 'i'),
-            timeKeywords: new RegExp('^(noon|midnight)', 'i'),
-            singleSpace: new RegExp('\\s'),
+            dateNumber: /[\s\/\-\.](?:([3][01]),?[\s\/\-\.]?|([012][1-9]),?[\s\/\-\.]?|([1-9]),?[\s\/\-\.]?)/,
+            year: /([0-9]{4})/,
+            dateKeywords: /^(yesterday|today|tomorrow)/i,
+            timeKeywords: /^(noon|midnight)/i,
+            singleSpace: /\s/,
 
             // sort patterns
             sortNumber: new RegExp('^(?:\\-?\\d+|\\d*)(?:\\.?\\d+|\\d)'),
@@ -366,14 +366,14 @@ const elrUtilities = function() {
                 }
             };
 
-            $(window).on('scroll', self.throttle(showElement, 100));
+            $(window).on('scroll', this.throttle(showElement, 100));
         },
         strToArray(str) {
             const arr = [];
             const splitStr = str.split(',');
 
-            self.each(splitStr, function() {
-                arr.push(self.trim(this));
+            this.each(splitStr, function() {
+                arr.push(this.trim(this));
             });
 
             return arr;
@@ -390,14 +390,14 @@ const elrUtilities = function() {
                 return that.indexOf(v) === i;
             });
         },
-        inArray(arr, item, i) {
-            return (arr == null) ? -1 : arr.indexOf(item, i);
+        inArray(arr, item, startIndex) {
+            return (arr == null) ? -1 : arr.indexOf(item, startIndex);
         },
-        // create an array of unique items from a list
+        // create an array of items from a list
         toArray(items, unique = false) {
             const arr = [];
 
-            self.each(items, function() {
+            this.each(items, function() {
                 arr.push(this.textContent);
 
                 if (unique) {
@@ -410,8 +410,8 @@ const elrUtilities = function() {
             return arr;
         },
         // create object keys with arrays for each value in an array
-        createArrays(obj, list) {
-            self.each(list, function() {
+        createArrays(list, obj = {}) {
+            this.each(list, function() {
                 obj[this] = [];
             });
 
@@ -421,7 +421,7 @@ const elrUtilities = function() {
         concatArrays(obj) {
             let arr = [];
 
-            self.each(obj, function() {
+            this.each(obj, function() {
                 arr = arr.concat(this);
             });
 
@@ -481,13 +481,6 @@ const elrUtilities = function() {
             that.each(sortLists, function(key) {
                 that[`sort${that.capitalize(key)}`](sortLists[key], dir);
             });
-
-            // that.each(types, function() {
-            //     let type = this;
-            //     that.each(sortLists[type], function(k, v) {
-            //         console.log($(v).text() + ':' + type);
-            //     });
-            // });
 
             return that.concatArrays(sortLists);
         },
@@ -783,11 +776,18 @@ const elrUtilities = function() {
 
             return filtered;
         },
+        elIsEven(el) {
+            if (((this.index(el) + 1) % 2) === 0) {
+                return true;
+            }
+
+            return false;
+        },
         even(collection) {
             const filtered = [];
 
             for (var i = 0; i < collection.length; i++) {
-                if (((self.index([collection[i]]) + 1) % 2) === 0) {
+                if (this.elIsEven(collection[i])) {
                     filtered.push(collection[i]);
                 }
             }
@@ -798,7 +798,7 @@ const elrUtilities = function() {
             const filtered = [];
 
             for (var i = 0; i < collection.length; i++) {
-                if (((self.index([collection[i]]) + 1) % 2) !== 0) {
+                if (!this.elIsEven(collection[i])) {
                     filtered.push(collection[i]);
                 }
             }

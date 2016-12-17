@@ -16,6 +16,8 @@
     "babel-preset-es2015": "^6.14.0",
     "chai": "^3.5.0",
     "chai-arrays": "0.0.1",
+    "chai-jquery": "^2.0.0",
+    "chai-shallow-deep-equal": "^1.4.4",
     "chai-subset": "^1.3.0",
     "codecov": "^1.0.1",
     "del": "^2.2.2",
