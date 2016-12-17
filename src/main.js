@@ -291,7 +291,7 @@ const elrUtilities = function() {
 
             return 0;
         },
-        compareNumber(a, b, dir = 'ascending') {
+        compare(a, b, dir = 'ascending') {
             return (dir === 'ascending') ? a - b : b - a;
         },
         // test for alpha values and perform alpha sort
@@ -300,77 +300,31 @@ const elrUtilities = function() {
                 return this.compareAlpha(a, b, dir);
             }
 
-            return this.compareNumber(a, b, dir);
+            return this.compare(a, b, dir);
         },
         // converts a time string to 24hr time
-        parseTime(time) {
-            const minutes = this.patterns.minute.exec(time)[1];
-            const ampm = this.patterns.ampm.exec(time)[1].toLowerCase();
-            let hour = parseInt(this.patterns.hour.exec(time)[1], 10);
-
+        to24hr(hour, minutes, ampm) {
             if (ampm === 'am') {
-                hour = hour.toString();
+                const hourStr = hour.toString();
 
-                if (hour === '12') {
-                    hour = '00';
-                } else if (hour.length === 1) {
-                    hour = `0${hour}`;
-                }
+                return (hourStr === '12') ? `00:${minutes}` : `0${hourStr}:${minutes}`;
+            // if 12pm
+            } else if (hour === 12) {
+                return `12:${minutes}`;
+            }
+            // if pm after 12
+            return `${(hour + 12)}:${minutes}`;
+        },
+        parseTime(time) {
+            if (this.patterns.time.test(time) && this.patterns.ampm.test(time)) {
+                const minutes = this.patterns.minute.exec(time)[2];
+                const hour = parseInt(this.patterns.hour.exec(time)[0], 10);
+                const ampm = this.patterns.ampm.exec(time)[0].toLowerCase();
 
-                return `${hour}:${minutes}`;
-
-            } else if (ampm === 'pm') {
-                return `${(hour + 12)}:${minutes}`;
+                return this.to24hr(hour, minutes, ampm);
             }
 
-            return 'should be am or pm';
-        },
-        sortTime($items, dir) {
-            const sort = (a, b) => {
-                const time1 = this.patterns.sortTime.exec(this.trim($(a).text()))[0];
-                const time2 = this.patterns.sortTime.exec(this.trim($(b).text()))[0];
-
-                if (this.isTime(this.trim($(a).text())) && this.isTime(this.trim($(b).text()))) {
-                    a = new Date(`04-22-2014 ${this.parseTime(time1)}`);
-                    b = new Date(`04-22-2014 ${this.parseTime(time2)}`);
-                }
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $items.sort(sort);
-        },
-        sortDate($items, dir) {
-            const sort = (a, b) => {
-                if (this.isDate(this.trim($(a).text())) && this.isDate(this.trim($(b).text()))) {
-                    a = new Date(this.patterns.sortMonthDayYear.exec(this.trim($(a).text())));
-                    b = new Date(this.patterns.sortMonthDayYear.exec(this.trim($(b).text())));
-                }
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $items.sort(sort);
-        },
-        sortAlpha($items, dir) {
-            const sort = (a, b) => {
-                a = this.cleanAlpha(this.trim($(a).text()), ['the', 'a']).toLowerCase();
-                b = this.cleanAlpha(this.trim($(b).text()), ['the', 'a']).toLowerCase();
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $items.sort(sort);
-        },
-        sortNumber($items, dir) {
-            const sort = (a, b) => {
-                a = parseFloat(this.trim($(a).text()));
-                b = parseFloat(this.trim($(b).text()));
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $items.sort(sort);
+            return null;
         },
         closest(el, selector) {
             let firstEl = el[0];
