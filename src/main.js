@@ -1,10 +1,10 @@
 const $ = require('jquery');
 
-if (!Number.isNan) {
-    Number.isNan = function(num) {
-        return num !== num;
-    };
-}
+// if (!Number.isNan) {
+//     Number.isNan = function(num) {
+//         return num !== num;
+//     };
+// }
 
 const elrUtilities = function() {
     const self = {
@@ -96,17 +96,6 @@ const elrUtilities = function() {
         isEven(val) {
             return val % 2 === 0;
         },
-        // filters an array using a callback function
-        // exclude(arr, fn) {
-        //     let list = [];
-        //     for (let i = 0; i < arr.length; i++) {
-        //         if (fn(arr[i])) {
-        //             list.push(arr[i]);
-        //         }
-        //     }
-
-        //     return list;
-        // };
         isDate(val) {
             return (this.patterns.sortMonthDayYear.test(val)) ? true : false;
         },
@@ -257,7 +246,7 @@ const elrUtilities = function() {
             });
         },
         inArray(arr, item, startIndex) {
-            return (arr == null) ? -1 : arr.indexOf(item, startIndex);
+            return (arr === null) ? -1 : arr.indexOf(item, startIndex);
         },
         // create an array of items from a list
         toArray(items, unique = false) {
@@ -312,49 +301,6 @@ const elrUtilities = function() {
             }
 
             return this.compareNumber(a, b, dir);
-        },
-        sortComplexList(types, listItems, dir = 'ascending') {
-            const that = this;
-            const sortLists = {};
-
-            // create sortList arrays
-            that.createArrays(sortLists, types);
-
-            // add list items to sortLists arrays
-
-            that.each(types, function() {
-                const type = this;
-
-                that.each(listItems, function() {
-                    const listItem = this;
-                    const val = that.trim($(listItem).text());
-
-                    if (that[`is${that.capitalize(type)}`].call(that, val)) {
-                        sortLists[type].push(listItem);
-                    } else {
-                        return;
-                    }
-                });
-
-                that.each(sortLists[type], function() {
-                    const val = ($(this).text());
-
-                    $(listItems).each(function(k) {
-                        const listVal = $(this).text();
-
-                        if (listVal === val) {
-                            listItems.splice(k, 1);
-                        }
-                    });
-                });
-            });
-
-            // sort sortLists arrays
-            that.each(sortLists, function(key) {
-                that[`sort${that.capitalize(key)}`](sortLists[key], dir);
-            });
-
-            return that.concatArrays(sortLists);
         },
         // converts a time string to 24hr time
         parseTime(time) {
