@@ -586,17 +586,6 @@ const elrUtilities = function() {
         // extendObj(obj, newObj = {}) {
         //     return;
         // }
-        getColumnList(columnNum, $listItems) {
-            let $list = [];
-
-            this.each($listItems, function(k, v) {
-                $list.push($(v).find('td').eq(columnNum));
-
-                return $list;
-            });
-
-            return $list;
-        },
         getListValues($list) {
             let values = [];
 
@@ -784,61 +773,6 @@ const elrUtilities = function() {
             };
 
             $(window).on('scroll', this.throttle(showElement, 100));
-        },
-        sortColumnDate($listItems, dir, columnNum) {
-            const sort = (a, b) => {
-                a = this.trim($(a).find('td').eq(columnNum).text());
-                b = this.trim($(b).find('td').eq(columnNum).text());
-
-                if (this.isDate(a) && this.isDate(b)) {
-                    a = new Date(this.patterns.monthDayYear.exec(a));
-                    b = new Date(this.patterns.monthDayYear.exec(b));
-
-                    return this.sortValues(a, b, dir);
-                }
-
-                return;
-            };
-
-            return $listItems.sort(sort);
-        },
-        sortColumnTime($listItems, dir, columnNum) {
-            const sort = (a, b) => {
-                a = this.trim($(a).find('td').eq(columnNum).text());
-                b = this.trim($(b).find('td').eq(columnNum).text());
-
-                if (this.isTime(a) && this.isTime(b)) {
-                    a = new Date(`04-22-2014 ${this.parseTime(this.patterns.monthDayYear.exec(a))}`);
-                    b = new Date(`04-22-2014 ${this.parseTime(this.patterns.monthDayYear.exec(b))}`);
-                } else {
-                    return;
-                }
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $listItems.sort(sort);
-        },
-        sortColumnAlpha($listItems, dir, columnNum) {
-            const ignoreWords = ['a', 'the'];
-            const sort = (a, b) => {
-                a = this.cleanAlpha(this.trim($(a).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
-                b = this.cleanAlpha(this.trim($(b).find('td').eq(columnNum).text()), ignoreWords).toLowerCase();
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $listItems.sort(sort);
-        },
-        sortColumnNumber($listItems, dir, columnNum) {
-            const sort = (a, b) => {
-                a = parseFloat(this.trim($(a).find('td').eq(columnNum).text()));
-                b = parseFloat(this.trim($(b).find('td').eq(columnNum).text()));
-
-                return this.sortValues(a, b, dir);
-            };
-
-            return $listItems.sort(sort);
         },
         clearElement($el, speed = 300) {
             $el.fadeOut(speed, function() {
