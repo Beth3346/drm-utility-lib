@@ -601,6 +601,58 @@ describe('elr', function() {
             expect(elr.checkLength('hello', 3)).to.be.false;
         });
     });
+    describe('#getText', function() {
+        it('should get text from element', function() {
+            const els = {
+                'el1': { 'innerText': 'Hello' },
+                'el2': { 'innerText': 'my name is' },
+                'el3': { 'innerText': 'Chloe' }
+            };
+            expect(elr.getText(els)).to.equal('Hello my name is Chloe');
+        });
+        it('should get text from element', function() {
+            const els = {
+                'el1': { 'textContent': 'Hello' },
+                'el2': { 'textContent': 'my name is' },
+                'el3': { 'textContent': 'Chloe' }
+            };
+            expect(elr.getText(els)).to.equal('Hello my name is Chloe');
+        });
+        it('should use a custom separator', function() {
+            const els = {
+                'el1': { 'innerText': 'dog' },
+                'el2': { 'innerText': 'cat' },
+                'el3': { 'innerText': 'bird' }
+            };
+            expect(elr.getText(els, ', ')).to.equal('dog, cat, bird');
+        });
+    });
+    describe('#getTextArray', function() {
+        it('should return an array of the element text', function() {
+            const els = {
+                'el1': { 'innerText': 'dog' },
+                'el2': { 'innerText': 'cat' },
+                'el3': { 'innerText': 'bird' }
+            };
+            expect(elr.getTextArray(els)).to.be.equalTo(['dog', 'cat', 'bird']);
+        });
+        it('should return an array of the element text', function() {
+            const els = {
+                'el1': { 'textContent': 'dog' },
+                'el2': { 'textContent': 'cat' },
+                'el3': { 'textContent': 'bird' }
+            };
+            expect(elr.getTextArray(els)).to.be.equalTo(['dog', 'cat', 'bird']);
+        });
+    });
+    describe('#getValue', function() {
+        it('should get the value of a field', function() {
+            expect(elr.getValue({value: 'success'})).to.equal('success');
+        });
+        it('should be null if the value is empty', function() {
+            expect(elr.getValue({value: ''})).to.be.null;
+        });
+    });
     describe('#cleanAlpha', function() {
         it('should remove words in the ignore words array', function() {
             expect(elr.cleanAlpha('The Lion King')).to.equal('Lion King');
@@ -707,6 +759,35 @@ describe('elr', function() {
                 'Toucan Sam'
             ];
             expect(elr.concatArrays(arrayObj)).to.be.equalTo(combinedArr);
+        });
+    });
+    describe('#compareAlpha', function() {
+        it('should compare 2 string', function() {
+            expect(elr.compareAlpha('bird', '')).to.equal(1);
+            expect(elr.compareAlpha('aardvark', 'bird')).to.equal(-1);
+            expect(elr.compareAlpha('aardvark', 'bird', 'descending')).to.equal(1);
+            expect(elr.compareAlpha('bird', 'bird')).to.equal(0);
+        });
+    });
+    describe('#compareNumber', function() {
+        it('should sort 2 numbers', function() {
+            expect(elr.compareNumber(2, 1)).to.equal(1);
+            expect(elr.compareNumber(1, 2)).to.equal(-1);
+            expect(elr.compareNumber(2, 2)).to.equal(0);
+            expect(elr.compareNumber(2.1, 2.2)).to.equal(2.1 - 2.2);
+            expect(elr.compareNumber(1, 2, 'descending')).to.equal(2 - 1);
+        });
+    });
+    describe('#sortValues', function() {
+        it('should sort 2 numbers', function() {
+            expect(elr.sortValues(2, 1)).to.equal(1);
+            expect(elr.sortValues(1, 2)).to.equal(-1);
+            expect(elr.sortValues(2, 2)).to.equal(0);
+        });
+        it('should alphabetize 2 string', function() {
+            expect(elr.sortValues('bird', '')).to.equal(1);
+            expect(elr.sortValues('aardvark', 'bird')).to.equal(-1);
+            expect(elr.sortValues('bird', 'bird')).to.equal(0);
         });
     });
 });
