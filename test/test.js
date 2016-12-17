@@ -272,10 +272,198 @@ describe('elr patterns', function() {
         it('should return true if the phone # is valid', function() {
             expect(elr.patterns.phone.test('281-123-4567')).to.be.true;
         });
+        it('should allow for dots instead of dashes', function() {
+            expect(elr.patterns.phone.test('281.123.4567')).to.be.true;
+        });
+        it('should return true for 10 digit strings', function() {
+            expect(elr.patterns.phone.test('2811234567')).to.be.true;
+        });
+        it('should allow for parentheses', function() {
+            expect(elr.patterns.phone.test('(281)123-4567')).to.be.true;
+        });
+        it('should allow for parentheses', function() {
+            expect(elr.patterns.phone.test('(281) 123-4567')).to.be.true;
+        });
+        it('should allow for extensions', function() {
+            expect(elr.patterns.phone.test('281-123-4567x242')).to.be.true;
+        });
+        it('should return false if the phone # is not valid', function() {
+            expect(elr.patterns.phone.test('281-123-456')).to.be.false;
+            expect(elr.patterns.phone.test('281) 123-456')).to.be.false;
+            expect(elr.patterns.phone.test('(281 123-456')).to.be.false;
+        });
+        it('should return false if the phone # is too long', function() {
+            expect(elr.patterns.phone.test('281-123-456479')).to.be.false;
+        });
+        it('should return false if the phone # contains alpha characters', function() {
+            expect(elr.patterns.phone.test('281-123-NOPE')).to.be.false;
+        });
+    });
+    describe('slug regex', function() {
+        it('should return true if the string contains alphanumeric characters and dashes', function() {
+            expect(elr.patterns.slug.test('cat-toys2')).to.be.true;
+            expect(elr.patterns.slug.test('cat-toys')).to.be.true;
+            expect(elr.patterns.slug.test('caTtoys2')).to.be.true;
+        });
+        it('should return false if the string contains spaces', function() {
+            expect(elr.patterns.slug.test('cat toys2')).to.be.false;
+        });
+        it('should return false if the string contains special characters other than dashes', function() {
+            expect(elr.patterns.slug.test('cat-toy^s')).to.be.false;
+        });
+    });
+    describe('tag regex', function() {
+        it('should return true if an html tag is present', function() {
+            expect(elr.patterns.tags.test('<div>Something</div>')).to.be.true;
+            expect(elr.patterns.tags.test('Hello<div>Something</div>')).to.be.true;
+            expect(elr.patterns.tags.test('Hello<div>Somet</div>hing')).to.be.true;
+        });
+        it('should return false if an html tag is not present', function() {
+            expect(elr.patterns.tags.test('Something')).to.be.false;
+            expect(elr.patterns.tags.test('Someth<div>ing')).to.be.false;
+        });
+    });
+    describe('credit card regex', function() {
+        it('should return true if a valid credit card number is entered', function() {
+            expect(elr.patterns.creditCard.test('6011690695678138')).to.be.true;
+            expect(elr.patterns.creditCard.test('5476569831778491')).to.be.true;
+            expect(elr.patterns.creditCard.test('4716720441222627')).to.be.true;
+            expect(elr.patterns.creditCard.test('4716720441222627')).to.be.true;
+            expect(elr.patterns.creditCard.test('4913798621943379')).to.be.true;
+            expect(elr.patterns.creditCard.test('371858049874763')).to.be.true;
+            expect(elr.patterns.creditCard.test('4738-3443-5353-3452')).to.be.true;
+            expect(elr.patterns.creditCard.test('4738 3443 5353 3452')).to.be.true;
+        });
+        it('should return false if an invalid credit card is entered', function() {
+            expect(elr.patterns.creditCard.test('473834334525353')).to.be.false;
+            expect(elr.patterns.creditCard.test('1738343345254353')).to.be.false;
+            expect(elr.patterns.creditCard.test('2738343345425353')).to.be.false;
+            expect(elr.patterns.creditCard.test('4738-34435353-3452')).to.be.false;
+            expect(elr.patterns.creditCard.test('4738 3443%5353 3452')).to.be.false;
+            expect(elr.patterns.creditCard.test('4738343K4525353')).to.be.false;
+        });
+    });
+    describe('CVV regex', function() {
+        it('should return true if the cvv is 3-4 digits', function() {
+            expect(elr.patterns.cvv.test('345')).to.be.true;
+            expect(elr.patterns.cvv.test('3545')).to.be.true;
+        });
+        it('should return false if the cvv not 3-4 digits', function() {
+            expect(elr.patterns.cvv.test('34544')).to.be.false;
+            expect(elr.patterns.cvv.test('35')).to.be.false;
+        });
+        it('should return false if the cvv not 3-4 digits', function() {
+            expect(elr.patterns.cvv.test('34544')).to.be.false;
+            expect(elr.patterns.cvv.test('35')).to.be.false;
+        });
+        it('should return false if the cvv contains anything other than numbers', function() {
+            expect(elr.patterns.cvv.test('3F44')).to.be.false;
+            expect(elr.patterns.cvv.test('DSE')).to.be.false;
+        });
+    });
+    describe('monthDayYear regex', function() {
+        it('should return true is string is month day year', function() {
+            expect(elr.patterns.monthDayYear.test('12-24-2016')).to.be.true;
+            expect(elr.patterns.monthDayYear.test('03-24-2016')).to.be.true;
+            expect(elr.patterns.monthDayYear.test('3-24-2016')).to.be.true;
+            expect(elr.patterns.monthDayYear.test('03/24/2016')).to.be.true;
+            expect(elr.patterns.monthDayYear.test('03.24.2016')).to.be.true;
+        });
+        it('there is no month 13', function() {
+            expect(elr.patterns.monthDayYear.test('13-24-2016')).to.be.false;
+            expect(elr.patterns.monthDayYear.test('00-24-2016')).to.be.false;
+            expect(elr.patterns.monthDayYear.test('0-24-2016')).to.be.false;
+            expect(elr.patterns.monthDayYear.test('00-24-206')).to.be.false;
+            expect(elr.patterns.monthDayYear.test('12-45-206')).to.be.false;
+        });
+    });
+    describe('time regex', function() {
+        it('should return true if time is valid', function() {
+            expect(elr.patterns.time.test('12:30am')).to.be.true;
+            expect(elr.patterns.time.test('12:30pm')).to.be.true;
+            expect(elr.patterns.time.test('3:30pm')).to.be.true;
+            expect(elr.patterns.time.test('3:30:19pm')).to.be.true;
+            expect(elr.patterns.time.test('03:30pm')).to.be.true;
+            expect(elr.patterns.time.test('3:30AM')).to.be.true;
+            expect(elr.patterns.time.test('12:30')).to.be.true;
+            expect(elr.patterns.time.test('12:30:32')).to.be.true;
+        });
+        it('should return false if time is invalid', function() {
+            expect(elr.patterns.time.test('13:30am')).to.be.false;
+            expect(elr.patterns.time.test('12:78pm')).to.be.false;
+            expect(elr.patterns.time.test('12:30hj')).to.be.false;
+            expect(elr.patterns.time.test('12:30:93am')).to.be.false;
+            expect(elr.patterns.time.test('34:30')).to.be.false;
+            expect(elr.patterns.time.test('24:30')).to.be.false;
+        });
+    });
+    describe('hour regex', function() {
+        it('should return true if hour is valid', function() {
+            expect(elr.patterns.hour.test('12:30am')).to.be.true;
+            expect(elr.patterns.hour.test('23:30')).to.be.true;
+        });
+        it('should return false if hour is invalid', function() {
+            expect(elr.patterns.hour.test('56:30pm')).to.be.false;
+            expect(elr.patterns.hour.test('1230pm')).to.be.false;
+        });
+    });
+    describe('minute regex', function() {
+        it('should return true if minute is valid', function() {
+            expect(elr.patterns.minute.test('12:05am')).to.be.true;
+            expect(elr.patterns.minute.test('12:30am')).to.be.true;
+            expect(elr.patterns.minute.test('23:30')).to.be.true;
+            expect(elr.patterns.minute.test('12:00am')).to.be.true;
+        });
+        it('should return false if minute is invalid', function() {
+            expect(elr.patterns.minute.test('12:80pm')).to.be.false;
+            expect(elr.patterns.minute.test('1230pm')).to.be.false;
+        });
     });
 });
 
 describe('elr', function() {
+    describe('#each', function() {
+        it('should iterate over an array', function() {
+            const times5 = function(nums) {
+                const arr = [];
+
+                elr.each(nums, function() {
+                    arr.push(this * 5);
+                })
+
+                return arr;
+            };
+
+            expect(times5([1,2,3])).to.containSubset([5,10,15]);
+        });
+        it('should iterate over an object', function() {
+            const names = {
+                'first': {
+                    'first': 'George',
+                    'last': 'Washington'
+                },
+                'second': {
+                    'first': 'John',
+                    'last': 'Adams'
+                },
+                'third': {
+                    'first': 'Thomas',
+                    'last': 'Jefferson'
+                }
+            };
+            const getNames = function(names) {
+                const arr = [];
+
+                elr.each(names, function() {
+                    arr.push(`${this.first} ${this.last}`);
+                })
+
+                return arr;
+            };
+
+            expect(getNames(names)).to.be.equalTo(['George Washington', 'John Adams', 'Thomas Jefferson']);
+        });
+    });
     describe('#trim', function() {
         it('should remove leading and trailing whitespace', function () {
             expect(elr.trim('hello  ')).to.equal('hello');
@@ -297,6 +485,146 @@ describe('elr', function() {
         });
         it('should return true if an even number is provided', function() {
             expect(elr.isEven(4)).to.be.true;
+        });
+    });
+    describe('#isDate', function() {
+        it('should true if string contains a valid date', function() {
+            expect(elr.isDate('03-12-2016')).to.be.true;
+            expect(elr.isDate('3-12-2016')).to.be.true;
+            expect(elr.isDate('03/12/2016')).to.be.true;
+            expect(elr.isDate('12/24/2016 is Christmas')).to.be.true;
+        });
+        it('should false if string does not contain a valid date', function() {
+            expect(elr.isDate('03-12-26')).to.be.false;
+            expect(elr.isDate('45-12-2016')).to.be.false;
+            expect(elr.isDate('03/839/2016')).to.be.false;
+            expect(elr.isDate('I like Christmas')).to.be.false;
+        });
+    });
+    describe('#isNumber', function() {
+        it('should true if string begins with a number', function() {
+            expect(elr.isNumber('5')).to.be.true;
+            expect(elr.isNumber('3-12-2016')).to.be.true;
+            expect(elr.isNumber('3 Dogs')).to.be.true;
+        });
+        it('should false if string does not begin with a number', function() {
+            expect(elr.isNumber('I like Christmas')).to.be.false;
+            expect(elr.isNumber('Christmas is in 9 days')).to.be.false;
+        });
+    });
+    describe('#isAlpha', function() {
+        it('should true if string contains alpha characters', function() {
+            expect(elr.isAlpha('3 Dogs')).to.be.true;
+            expect(elr.isAlpha('I like Christmas')).to.be.true;
+            expect(elr.isAlpha('Christmas is in 9 days')).to.be.true;
+        });
+        it('should false if string does not contain alpha characters', function() {
+            expect(elr.isAlpha('5')).to.be.false;
+            expect(elr.isAlpha('3-12-2016')).to.be.false;
+        });
+    });
+    describe('#isTime', function() {
+        it('should true if string contains a valid time', function() {
+            expect(elr.isTime('12:30am')).to.be.true;
+            expect(elr.isTime('04:45:23am')).to.be.true;
+            expect(elr.isTime('18:23')).to.be.true;
+        });
+        it('should false if string does not contain a valid time', function() {
+            expect(elr.isTime('13:08am')).to.be.false;
+            expect(elr.isTime('32:34')).to.be.false;
+            expect(elr.isTime('I like Christmas')).to.be.false;
+        });
+    });
+    describe('#getDataTypes', function() {
+        it('should return an array of data types', function() {
+            const values = {
+                'name': 'Beth',
+                'age': 33,
+                'birthday': '03/24/1983',
+                'time': '12:30pm'
+            };
+            const types = ['alpha', 'number', 'date', 'time'];
+            expect(elr.getDataTypes(values)).to.be.equalTo(types);
+        });
+        it('should return an array of data types', function() {
+            const values = ['Dog', 'Cat', 'Deer'];
+            const types = ['alpha'];
+            expect(elr.getDataTypes(values)).to.be.equalTo(types);
+        });
+        it('should return an array of data types', function() {
+            const values = [1, 2, 3, 4];
+            const types = ['number'];
+            expect(elr.getDataTypes(values)).to.be.equalTo(types);
+        });
+        it('should be able to override with type parameter', function() {
+            const values = ['1', '2', '3', '4'];
+            const types = ['alpha'];
+            expect(elr.getDataTypes(values, 'alpha')).to.be.equalTo(types);
+        });
+    });
+    describe('#generateRandomString', function() {
+        it('should return a string of the given length', function() {
+            expect(elr.generateRandomString(10)).to.have.lengthOf(10);
+            expect(elr.generateRandomString(4)).to.have.lengthOf(4);
+        });
+        it('should return a string of the given length', function() {
+            expect(elr.generateRandomString(5)).to.be.a('string');
+        });
+    });
+    describe('#checkBlacklist', function() {
+        it('should return the array index if string is in the blacklist array', function() {
+            expect(elr.checkBlacklist('password', ['password', 'hello'])).to.not.equal(-1);
+            expect(elr.checkBlacklist('hello', ['password', 'hello'])).to.equal(1);
+        });
+        it('should return -1 if string is not in the blacklist array', function() {
+            expect(elr.checkBlacklist('howdy', ['password', 'hello'])).to.equal(-1);
+        });
+    });
+    describe('#checkLength', function() {
+        it('should return true if the string is the required length', function() {
+            expect(elr.checkLength('hello', 5)).to.be.true;
+            expect(elr.checkLength('hello', 3)).to.be.false;
+        });
+    });
+    describe('#cleanAlpha', function() {
+        it('should remove words in the ignore words array', function() {
+            expect(elr.cleanAlpha('The Lion King')).to.equal('Lion King');
+            expect(elr.cleanAlpha('A Farewell to Arms')).to.equal('Farewell to Arms');
+            expect(elr.cleanAlpha('The Lion King')).to.equal('Lion King');
+        });
+        it('should only remove leading words', function() {
+            expect(elr.cleanAlpha('In the afternoon', ['Tiny'])).to.equal('In the afternoon');
+        });
+        it('should take a custom array', function() {
+            expect(elr.cleanAlpha('Tiny Dancer', ['Tiny'])).to.equal('Dancer');
+        });
+    });
+    describe('#capitalize', function() {
+        it('should capitalize the first letter of each word', function() {
+            expect(elr.capitalize('hello beth')).to.equal('Hello Beth');
+        });
+    });
+    describe('#cleanString', function() {
+        it('should remove the provided re value from the provided string', function() {
+            expect(elr.cleanString('We gotta get out of this place', ' this')).to.equal('We gotta get out of place')
+        });
+    });
+    describe('#strToArray', function() {
+        it('should take a comma separated string and convert to an array', function() {
+            expect(elr.strToArray('Mary, Jo, Beth, Amy')).to.be.ofSize(4);
+            expect(elr.strToArray('Mary, Jo, Beth, Amy')).to.be.equalTo(['Mary', 'Jo', 'Beth', 'Amy']);
+        });
+    });
+    describe('#isArray', function() {
+        it('should return true if object is an array', function() {
+            const arr = ['Mary', 'Jo', 'Beth', 'Amy'];
+            const objArr = [{'name': 'Mary'}, {'name': 'Jo'}];
+            const str = 'Hello';
+            const num = 2;
+            expect(elr.isArray(arr)).to.be.true;
+            expect(elr.isArray(objArr)).to.be.true;
+            expect(elr.isArray(str)).to.be.false;
+            expect(elr.isArray(num)).to.be.false;
         });
     });
 });

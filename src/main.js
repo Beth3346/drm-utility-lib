@@ -34,23 +34,23 @@ const elrUtilities = function() {
             // validates 77494 and 77494-3232
             postalCode: /^[0-9]{5}-[0-9]{4}$|^[0-9]{5}$/,
             // validates United States phone number patterns
-            phone: /^((?:\d{3}[)-.])?(?:[\s]?\d{3})(?:[\-\.]?\d{4})(?:[xX]\d+)?)$/i,
-            alphaNumDash: /^[a-z\d- ]*$/i,
+            phone: /^(?:\d{10})|^((?:\()?(?:\d{3}[)-.])?(?:[\s]?\d{3})(?:[\-\.]?\d{4})(?:[xX]\d+)?)$/i,
+            slug: /^[a-z\d-]*$/i,
             tags: /<[a-z]+.*>.*<\/[a-z]+>/i,
             // matched all major cc
-            creditCard: new RegExp('^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$'),
+            creditCard: /^(?:3[47]\d{2}([\ \-]?)\d{6}\1\d|(?:(?:4\d|5[1-5]|65)\d{2}|6011)([\ \-]?)\d{4}\2\d{4}\2)\d{4}$/,
             cvv: /^[0-9]{3,4}$/,
             // mm/dd/yyyy
-            monthDayYear: new RegExp('^(?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4}$'),
+            monthDayYear: /^(?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4}$/,
             // 00:00pm
-            time: new RegExp('^(?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\/:[012345][0-9])?(?:am|pm)$', 'i'),
-            hour: /^(\\d+)/,
-            minute: /:(\\d+)/,
+            time: /(?:^(?:[12][012]:|[0]?[0-9]:)[012345][0-9](?::[012345][0-9])?(?:am|pm)$)|(?:^(?:(?:1[0-9])|(?:2[0-3])|(?:0?[0-9])):(?:[0-5][0-9])(?::[0-5][0-9])?$)/i,
+            hour: /^([12][012])(?=:)|^([0]?[0-9])(?=:)|^(1[0-5])(?=:)|^(2[0-3])(?=:)/,
+            minute: /:(0[0-9])|:([1-5][0-9])/,
             ampm: /(am|pm|AM|PM)$/,
-            longDate: new RegExp('^(?:[a-z]*[\\.,]?\\s)?[a-z]*\\.?\\s(?:[3][01],?\\s|[012][1-9],?\\s|[1-9],?\\s)[0-9]{4}$', 'i'),
-            shortDate: new RegExp('((?:[0]?[1-9]|[1][012]|[1-9])[-\/.](?:[0]?[1-9]|[12][0-9]|[3][01])[-\/.][0-9]{4})'),
+            longDate: /^(?:[a-z]*[\.,]?\s)?[a-z]*\.?\s(?:[3][01],?\s|[012][1-9],?\s|[1-9],?\s)[0-9]{4}$/i,
+            // shortDate: this.monthDayYear,
             longTime: new RegExp('((?:[12][012]:|[0]?[0-9]:)[012345][0-9](?:\\:[012345][0-9])?(?:am|pm)?)', 'i'),
-            longMonth: new RegExp('\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)'),
+            longMonth: /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)/,
             dateNumber: new RegExp('[\\s\/\\-\\.](?:([3][01]),?[\\s\/\\-\\.]?|([012][1-9]),?[\\s\/\\-\\.]?|([1-9]),?[\\s\/\\-\\.]?)'),
             year: new RegExp('([0-9]{4})'),
             dateKeywords: new RegExp('^(yesterday|today|tomorrow)', 'i'),
@@ -117,11 +117,10 @@ const elrUtilities = function() {
             return (this.patterns.alpha.test(val)) ? true : false;
         },
         isTime(val) {
-            return (this.patterns.sortTime.test(val)) ? true : false;
+            return (this.patterns.time.test(val)) ? true : false;
         },
         getDataTypes(values, type = null) {
-            let types = [];
-            type = type || null;
+            const types = [];
 
             if (type) {
                 types.push(type);
@@ -147,10 +146,8 @@ const elrUtilities = function() {
 
             return this.unique(types);
         },
-        generateRandomString(length, charset) {
+        generateRandomString(length = 10, charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
             let str = '';
-            length = length || 10;
-            charset = charset || 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
             for (let i = 0, n = charset.length; i < length; i++) {
                 str += charset.charAt(Math.floor(Math.random() * n));
@@ -167,17 +164,17 @@ const elrUtilities = function() {
         },
         checkLength(str, reqLength) {
             if (str) {
-                return (str.length < reqLength) ? true : false;
+                return (str.length <= reqLength) ? true : false;
             }
 
             return;
         },
         getText(elems, separator = ' ') {
-            let text = [];
+            const text = [];
 
-            self.each(elems, function() {
-                let val = this.innerText || this.textContent;
-                text.push(self.trim(val));
+            this.each(elems, function() {
+                const val = this.innerText || this.textContent;
+                text.push(this.trim(val));
             });
 
             return text.join(separator);
@@ -185,7 +182,7 @@ const elrUtilities = function() {
         getTextArray(elems) {
             let arr = [];
 
-            self.each(elems, function() {
+            this.each(elems, function() {
                 let val = this.innerText || this.textContent;
                 arr.push(val);
             });
@@ -193,18 +190,18 @@ const elrUtilities = function() {
             return arr;
         },
         getValue(field) {
-            let value = self.trim(field.value);
+            let value = this.trim(field.value);
 
             if (value.length > 0) {
                 return value;
-            } else {
-                return null;
             }
+
+            return null;
         },
         getColumnList(columnNum, $listItems) {
             let $list = [];
 
-            self.each($listItems, function(k, v) {
+            this.each($listItems, function(k, v) {
                 $list.push($(v).find('td').eq(columnNum));
 
                 return $list;
@@ -215,8 +212,8 @@ const elrUtilities = function() {
         getListValues($list) {
             let values = [];
 
-            self.each($list, function(k,v) {
-                values.push(self.trim($(v).text()).toLowerCase());
+            this.each($list, function(k,v) {
+                values.push(this.trim($(v).text()).toLowerCase());
 
                 return values;
             });
@@ -224,11 +221,9 @@ const elrUtilities = function() {
             return values;
         },
         // removes leading 'the' or 'a' from a string
-        cleanAlpha(str, ignoreWords) {
-            ignoreWords = ignoreWords || ['the', 'a'];
-
-            self.each(ignoreWords, function() {
-                let re = new RegExp('^' + this + '\\s', 'i');
+        cleanAlpha(str, ignoreWords = ['the', 'a']) {
+            this.each(ignoreWords, function() {
+                const re = new RegExp('^' + this + '\\s', 'i');
                 str = str.replace(re, '');
 
                 return str;
@@ -242,11 +237,9 @@ const elrUtilities = function() {
             });
         },
         // debounce
-        throttle(fn, threshold, scope) {
+        throttle(fn, scope, threshold = 500) {
             let last;
             let deferTimer;
-
-            threshold = threshold || 500;
 
             return function() {
                 let context = scope || this;
@@ -266,9 +259,7 @@ const elrUtilities = function() {
                 }
             };
         },
-        clearElement($el, speed) {
-            speed = speed || 300;
-
+        clearElement($el, speed = 300) {
             $el.fadeOut(speed, function() {
                 $(this).remove();
             });
@@ -284,8 +275,8 @@ const elrUtilities = function() {
             });
         },
         cleanString(str, re) {
-            let reg = new RegExp(re, 'i');
-            return self.trim(str.replace(reg, ''));
+            const reg = new RegExp(re, 'i');
+            return this.trim(str.replace(reg, ''));
         },
         getFormData($form) {
             // get form data and return an object
