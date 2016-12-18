@@ -15,7 +15,25 @@ Download node at [nodejs.org](http://nodejs.org) and install it, if you haven't 
 npm install elr-utility-lib --save
 ```
 
+## Change Log
 
+- Removed jQuery as a dependency
+- Moved the following functions to elr-ui
+    - getListValues
+    - getFormData
+    - createElement
+    - toTop
+    - killEvent
+    - scrollSpy
+    - getPosition
+    - findPositions
+    - openInTab
+    - isMobile
+    - randomClass
+    - gotoSection
+    - scrollToView
+    - clearElement
+    - clearForm
 
 ## Dependencies
 
