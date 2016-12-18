@@ -20,7 +20,6 @@ npm install elr-utility-lib --save
 ## Dependencies
 
 - [babel-runtime](https://github.com/babel/babel/tree/master/packages): babel selfContained runtime
-- [jquery](https://github.com/jquery/jquery): JavaScript library for DOM operations
 
 ## Dev Dependencies
 

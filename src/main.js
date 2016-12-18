@@ -1,11 +1,3 @@
-const $ = require('jquery');
-
-// if (!Number.isNan) {
-//     Number.isNan = function(num) {
-//         return num !== num;
-//     };
-// }
-
 const elrUtilities = function() {
     const self = {
         // TODO: add support for sorting datetime values
